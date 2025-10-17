@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white">
+        <h2 class="h4 mb-0">Detail Inventaris: <%= item.nomorInventaris %></h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class="card-title"><%= item.namaBarang %></h3>
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width: 30%;">Nama Barang</th>
+                            <td><%= item.namaBarang %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Warna</th>
+                            <td><%= item.warna || 'N/A' %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Kategori</th>
+                            <td><%= item.kategori %> (<%= item.subKategori %>)</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Sumber Anggaran</th>
+                            <td><span class="badge bg-info text-dark"><%= item.sumberAnggaran || 'N/A' %></span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Kondisi Awal</th>
+                            <td><span class="badge bg-secondary"><%= item.statusKondisi_awal || 'N/A' %></span></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Kondisi Terkini</th>
+                            <td>
+                                <% if(item.statusKondisi === 'Baik') { %>
+                                    <span class="badge bg-success"><%= item.statusKondisi %></span>
+                                <% } else if (item.statusKondisi && item.statusKondisi.includes('Perbaikan')) { %>
+                                    <span class="badge bg-warning text-dark"><%= item.statusKondisi %></span>
+                                <% } else { %>
+                                    <span class="badge bg-danger"><%= item.statusKondisi %></span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Lokasi Awal</th>
+                            <td><%= item.lokasiFisik_awal || 'N/A' %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Lokasi Terkini</th>
+                            <td><%= item.lokasiFisik %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Jumlah Awal</th>
+                            <td><%= item.jumlah_awal || 'N/A' %> <%= item.satuan %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Jumlah Terkini</th>
+                            <td><%= item.jumlah %> <%= item.satuan %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nilai Perolehan</th>
+                            <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.nilaiPerolehan) %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Diinput oleh</th>
+                            <td><%= item.createdBy %> pada <%= item.createdAt.toDate().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric'}) %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Diupdate oleh</th>
+                            <td><%= item.updatedBy && item.updatedAt.toDate().getTime() !== item.createdAt.toDate().getTime() ? `${item.updatedBy} pada ${item.updatedAt.toDate().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric'})}` : 'Belum ada update' %></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4 text-center">
+                <h5>Scan QR Code untuk Aset Ini</h5>
+                <img src="<%= qrCodeDataUrl %>" alt="QR Code" class="img-fluid border rounded p-2">
+                <p class="mt-2">
+                    <a href="<%= qrCodeDataUrl %>" download="QR_<%= item.nomorInventaris.replace(/\//g, '-') %>.png" class="btn btn-success btn-sm">
+                        <i class="bi bi-download"></i> Unduh QR Code
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<a href="/" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> Kembali ke Daftar</a>
+
+<%- include('partials/footer') %>

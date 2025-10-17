@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+
+<h1 class="h2 mb-4">Formulir Tambah Barang Baru</h1>
+
+<div class="bg-white p-4 rounded shadow-sm">
+    <form action="/tambah" method="POST">
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label for="namaBarang" class="form-label">Nama Barang</label>
+                <input type="text" class="form-control" id="namaBarang" name="namaBarang" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="warna" class="form-label">Warna</label>
+                <select class="form-select" id="warna" name="warna" required>
+                    <option value="" disabled selected>-- Pilih Warna --</option>
+                    <% options.warna.forEach(w => { %>
+                        <option value="<%= w %>"><%= w %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="kategori" class="form-label">Kategori</label>
+                <select class="form-select" id="kategori" name="kategori" data-master="<%= JSON.stringify(masterKategori) %>" required>
+                    <option value="" disabled selected>-- Pilih Kategori --</option>
+                    <% Object.keys(masterKategori).forEach(k => { %>
+                        <option value="<%= k %>"><%= k %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="subKategori" class="form-label">Sub Kategori</label>
+                <select class="form-select" id="subKategori" name="subKategori" required>
+                    <option value="" disabled selected>-- Pilih Kategori Dulu --</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="sumberAnggaran" class="form-label">Sumber Anggaran</label>
+            <select class="form-select" id="sumberAnggaran" name="sumberAnggaran" required>
+                <option value="" disabled selected>-- Pilih Sumber Anggaran --</option>
+                <% options.sumberAnggaran.forEach(sa => { %>
+                    <option value="<%= sa %>"><%= sa %></option>
+                <% }) %>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="jumlah" class="form-label">Jumlah</label>
+                <input type="number" class="form-control" id="jumlah" name="jumlah" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="satuan" class="form-label">Satuan</label>
+                <select class="form-select" id="satuan" name="satuan" required>
+                     <option value="" disabled selected>-- Pilih Satuan --</option>
+                    <% options.satuan.forEach(s => { %>
+                        <option value="<%= s %>"><%= s %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                 <label for="nilaiPerolehan" class="form-label">Nilai Perolehan (Rp)</label>
+                <input type="number" class="form-control" id="nilaiPerolehan" name="nilaiPerolehan" step="1000" placeholder="Contoh: 5000000" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="lokasiFisik" class="form-label">Lokasi Fisik</label>
+            <input type="text" class="form-control" id="lokasiFisik" name="lokasiFisik" placeholder="Contoh: Gedung A, Ruang Kelas 1, Lemari B" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="statusKondisi" class="form-label">Status Kondisi</label>
+            <select class="form-select" id="statusKondisi" name="statusKondisi" required>
+                <option value="" disabled selected>-- Pilih Status --</option>
+                <% options.statusKondisi.forEach(s => { %>
+                    <option value="<%= s %>"><%= s %></option>
+                <% }) %>
+            </select>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success"><i class="bi bi-save-fill"></i> Simpan Barang</button>
+            <a href="/" class="btn btn-secondary">Batal</a>
+        </div>
+    </form>
+</div>
+
+<%- include('partials/footer') %>
