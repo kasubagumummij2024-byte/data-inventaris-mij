@@ -1,5 +1,8 @@
 // index.js
-require('dotenv').config();
+// KODE BARU
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 
 const express = require('express');
 const path = require('path');
