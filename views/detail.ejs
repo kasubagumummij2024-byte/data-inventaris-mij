@@ -1,8 +1,12 @@
 <%- include('partials/header') %>
 
 <div class="card shadow-sm">
-    <div class="card-header bg-dark text-white">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h2 class="h4 mb-0">Detail Inventaris: <%= item.nomorInventaris %></h2>
+        <!-- Tombol Edit hanya muncul jika user login -->
+        <% if (user) { %>
+            <a href="/edit/<%= item.id %>" class="btn btn-outline-light btn-sm"><i class="bi bi-pencil-square"></i> Edit</a>
+        <% } %>
     </div>
     <div class="card-body">
         <div class="row">
@@ -11,7 +15,11 @@
                 <table class="table table-bordered table-striped">
                     <tbody>
                         <tr>
-                            <th scope="row" style="width: 30%;">Nama Barang</th>
+                            <th scope="row" style="width: 30%;">Nomor Inventaris</th>
+                            <td><strong><%= item.nomorInventaris %></strong></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nama Barang</th>
                             <td><%= item.namaBarang %></td>
                         </tr>
                         <tr>
@@ -27,19 +35,25 @@
                             <td><span class="badge bg-info text-dark"><%= item.sumberAnggaran || 'N/A' %></span></td>
                         </tr>
                         <tr>
+                            <th scope="row">Tahun Perolehan</th>
+                            <td><%= item.tahunPerolehan || 'N/A' %></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nilai Perolehan</th>
+                            <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.nilaiPerolehan || 0) %></td>
+                        </tr>
+                        <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Kondisi & Lokasi</td></tr>
+                        <tr>
                             <th scope="row">Kondisi Awal</th>
                             <td><span class="badge bg-secondary"><%= item.statusKondisi_awal || 'N/A' %></span></td>
                         </tr>
                         <tr>
                             <th scope="row">Kondisi Terkini</th>
                             <td>
-                                <% if(item.statusKondisi === 'Baik') { %>
-                                    <span class="badge bg-success"><%= item.statusKondisi %></span>
-                                <% } else if (item.statusKondisi && item.statusKondisi.includes('Perbaikan')) { %>
-                                    <span class="badge bg-warning text-dark"><%= item.statusKondisi %></span>
-                                <% } else { %>
-                                    <span class="badge bg-danger"><%= item.statusKondisi %></span>
-                                <% } %>
+                                <% if(item.statusKondisi === 'Baik') { %> <span class="badge bg-success"><%= item.statusKondisi %></span>
+                                <% } else if (item.statusKondisi && item.statusKondisi.includes('Perbaikan')) { %> <span class="badge bg-warning text-dark"><%= item.statusKondisi %></span>
+                                <% } else if (item.statusKondisi) { %> <span class="badge bg-danger"><%= item.statusKondisi %></span>
+                                <% } else { %> N/A <% } %>
                             </td>
                         </tr>
                         <tr>
@@ -50,7 +64,8 @@
                             <th scope="row">Lokasi Terkini</th>
                             <td><%= item.lokasiFisik %></td>
                         </tr>
-                        <tr>
+                         <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Jumlah</td></tr>
+                         <tr>
                             <th scope="row">Jumlah Awal</th>
                             <td><%= item.jumlah_awal || 'N/A' %> <%= item.satuan %></td>
                         </tr>
@@ -58,29 +73,42 @@
                             <th scope="row">Jumlah Terkini</th>
                             <td><%= item.jumlah %> <%= item.satuan %></td>
                         </tr>
-                        <tr>
-                            <th scope="row">Nilai Perolehan</th>
-                            <td><%= new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.nilaiPerolehan) %></td>
-                        </tr>
+                        <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Pencatatan</td></tr>
                         <tr>
                             <th scope="row">Diinput oleh</th>
-                            <td><%= item.createdBy %> pada <%= item.createdAt.toDate().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric'}) %></td>
+                            <td><%= item.createdBy %> <br><small class="text-muted"><%= item.createdAt.toDate().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short'}) %></small></td>
                         </tr>
                         <tr>
-                            <th scope="row">Diupdate oleh</th>
-                            <td><%= item.updatedBy && item.updatedAt.toDate().getTime() !== item.createdAt.toDate().getTime() ? `${item.updatedBy} pada ${item.updatedAt.toDate().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric'})}` : 'Belum ada update' %></td>
+                            <th scope="row">Update Terakhir oleh</th>
+                            <td><%= item.updatedBy && item.updatedAt.toDate().getTime() !== item.createdAt.toDate().getTime() ? `${item.updatedBy} <br><small class="text-muted">${item.updatedAt.toDate().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short'})}</small>` : '<span class="text-muted">Belum ada update</span>' %></td>
                         </tr>
+                        
+                        <!-- Informasi Penghapusan (jika ada) -->
+                        <% if (item.statusPenghapusan && item.statusPenghapusan !== 'Masih Digunakan') { %>
+                        <tr><td colspan="2" class="bg-danger fw-bold text-white text-center">Informasi Penghapusan Aset</td></tr>
+                        <tr class="table-danger">
+                            <th scope="row">Status</th>
+                            <td><strong><%= item.statusPenghapusan %></strong></td>
+                        </tr>
+                        <tr class="table-danger">
+                            <th scope="row">Dasar Penghapusan</th>
+                            <td><%= item.dasarPenghapusan || 'N/A' %></td>
+                        </tr>
+                        <tr class="table-danger">
+                            <th scope="row">Tanggal Penghapusan</th>
+                            <td><%= item.tanggalPenghapusan ? item.tanggalPenghapusan.toDate().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric'}) : 'N/A' %></td>
+                        </tr>
+                        <% } %>
+
                     </tbody>
                 </table>
             </div>
             <div class="col-md-4 text-center">
-                <h5>Scan QR Code untuk Aset Ini</h5>
-                <img src="<%= qrCodeDataUrl %>" alt="QR Code" class="img-fluid border rounded p-2">
-                <p class="mt-2">
-                    <a href="<%= qrCodeDataUrl %>" download="QR_<%= item.nomorInventaris.replace(/\//g, '-') %>.png" class="btn btn-success btn-sm">
-                        <i class="bi bi-download"></i> Unduh QR Code
-                    </a>
-                </p>
+                <h5>Scan QR Code Aset</h5>
+                <img src="<%= qrCodeDataUrl %>" alt="QR Code" class="img-fluid border rounded p-2 mb-2">
+                <a href="<%= qrCodeDataUrl %>" download="QR_<%= item.nomorInventaris.replace(/\//g, '-') %>.png" class="btn btn-success btn-sm">
+                    <i class="bi bi-download"></i> Unduh QR Code
+                </a>
             </div>
         </div>
     </div>

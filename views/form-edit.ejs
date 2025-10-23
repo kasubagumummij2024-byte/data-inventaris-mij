@@ -6,7 +6,7 @@
     <form action="/update/<%= item.id %>" method="POST">
         <div class="mb-3">
             <label for="nomorInventaris" class="form-label">Nomor Inventaris</label>
-            <input type="text" class="form-control" id="nomorInventaris" name="nomorInventaris" value="<%= item.nomorInventaris %>" readonly>
+            <input type="text" class="form-control" id="nomorInventaris" name="nomorInventaris" value="<%= item.nomorInventaris %>" readonly disabled> <!-- Disabled agar tidak terkirim -->
         </div>
 
         <div class="row">
@@ -37,24 +37,33 @@
             <div class="col-md-6 mb-3">
                 <label for="subKategori" class="form-label">Sub Kategori</label>
                 <select class="form-select" id="subKategori" name="subKategori" required>
+                    <!-- Script main.js akan mengisi opsi, kita set value awalnya di sini -->
                     <option value="<%= item.subKategori %>" selected><%= item.subKategori %></option>
                 </select>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="sumberAnggaran" class="form-label">Sumber Anggaran</label>
-            <select class="form-select" id="sumberAnggaran" name="sumberAnggaran" required>
-                <% options.sumberAnggaran.forEach(sa => { %>
-                    <option value="<%= sa %>" <%= item.sumberAnggaran === sa ? 'selected' : '' %>><%= sa %></option>
-                <% }) %>
-            </select>
+        <div class="row">
+             <div class="col-md-8 mb-3">
+                <label for="sumberAnggaran" class="form-label">Sumber Anggaran</label>
+                <select class="form-select" id="sumberAnggaran" name="sumberAnggaran" required>
+                    <% options.sumberAnggaran.forEach(sa => { %>
+                        <option value="<%= sa %>" <%= item.sumberAnggaran === sa ? 'selected' : '' %>><%= sa %></option>
+                    <% }) %>
+                </select>
+            </div>
+             <div class="col-md-4 mb-3">
+                <label for="tahunPerolehan" class="form-label">Tahun Perolehan</label>
+                <input type="number" class="form-control" id="tahunPerolehan" name="tahunPerolehan" value="<%= item.tahunPerolehan %>" placeholder="Contoh: 2024" min="1900" max="<%= new Date().getFullYear() %>" required>
+            </div>
         </div>
+
 
         <div class="row">
             <div class="col-md-4 mb-3">
-                <label for="jumlah" class="form-label">Jumlah</label>
-                <input type="number" class="form-control" id="jumlah" name="jumlah" value="<%= item.jumlah %>" required>
+                <label for="jumlah" class="form-label">Jumlah Terkini</label>
+                <input type="number" class="form-control" id="jumlah" name="jumlah" value="<%= item.jumlah %>" min="0" required>
+                 <small class="form-text text-muted">Jumlah awal: <%= item.jumlah_awal %></small>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="satuan" class="form-label">Satuan</label>
@@ -66,25 +75,53 @@
             </div>
             <div class="col-md-4 mb-3">
                  <label for="nilaiPerolehan" class="form-label">Nilai Perolehan (Rp)</label>
-                <input type="number" class="form-control" id="nilaiPerolehan" name="nilaiPerolehan" value="<%= item.nilaiPerolehan %>" step="1000" required>
+                <input type="number" class="form-control" id="nilaiPerolehan" name="nilaiPerolehan" value="<%= item.nilaiPerolehan %>" step="1" min="0" required>
             </div>
         </div>
 
         <div class="mb-3">
-            <label for="lokasiFisik" class="form-label">Lokasi Fisik</label>
+            <label for="lokasiFisik" class="form-label">Lokasi Fisik Terkini</label>
             <input type="text" class="form-control" id="lokasiFisik" name="lokasiFisik" value="<%= item.lokasiFisik %>" required>
+             <small class="form-text text-muted">Lokasi awal: <%= item.lokasiFisik_awal %></small>
         </div>
 
         <div class="mb-3">
-            <label for="statusKondisi" class="form-label">Status Kondisi</label>
+            <label for="statusKondisi" class="form-label">Status Kondisi Terkini</label>
             <select class="form-select" id="statusKondisi" name="statusKondisi" required>
                 <% options.statusKondisi.forEach(s => { %>
                     <option value="<%= s %>" <%= item.statusKondisi === s ? 'selected' : '' %>><%= s %></option>
                 <% }) %>
             </select>
+             <small class="form-text text-muted">Kondisi awal: <%= item.statusKondisi_awal %></small>
         </div>
 
-        <div class="d-flex gap-2">
+        <!-- Blok Informasi Penghapusan -->
+        <fieldset class="border p-3 mt-4 rounded">
+            <legend class="float-none w-auto px-2 h6">Informasi Penghapusan Aset</legend>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="statusPenghapusan" class="form-label">Status Penghapusan</label>
+                    <select class="form-select" id="statusPenghapusan" name="statusPenghapusan">
+                        <% options.statusPenghapusan.forEach(sp => { %>
+                            <option value="<%= sp %>" <%= item.statusPenghapusan === sp ? 'selected' : '' %>><%= sp %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                 <div class="col-md-6 mb-3">
+                    <label for="tanggalPenghapusan" class="form-label">Tanggal Penghapusan</label>
+                    <input type="date" class="form-control" id="tanggalPenghapusan" name="tanggalPenghapusan" value="<%= item.tanggalPenghapusanFormatted %>">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="dasarPenghapusan" class="form-label">Dasar Penghapusan (No. Surat, dll)</label>
+                <input type="text" class="form-control" id="dasarPenghapusan" name="dasarPenghapusan" value="<%= item.dasarPenghapusan || '' %>">
+            </div>
+            <small class="form-text text-muted">Isi bagian ini hanya jika status penghapusan BUKAN 'Masih Digunakan'. Tanggal Penghapusan wajib diisi jika status diubah.</small>
+        </fieldset>
+        <!-- Akhir Blok Penghapusan -->
+
+
+        <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill"></i> Update Barang</button>
             <a href="/" class="btn btn-secondary">Batal</a>
         </div>

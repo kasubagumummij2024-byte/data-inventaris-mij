@@ -38,20 +38,26 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="sumberAnggaran" class="form-label">Sumber Anggaran</label>
-            <select class="form-select" id="sumberAnggaran" name="sumberAnggaran" required>
-                <option value="" disabled selected>-- Pilih Sumber Anggaran --</option>
-                <% options.sumberAnggaran.forEach(sa => { %>
-                    <option value="<%= sa %>"><%= sa %></option>
-                <% }) %>
-            </select>
+        <div class="row">
+             <div class="col-md-8 mb-3">
+                <label for="sumberAnggaran" class="form-label">Sumber Anggaran</label>
+                <select class="form-select" id="sumberAnggaran" name="sumberAnggaran" required>
+                    <option value="" disabled selected>-- Pilih Sumber Anggaran --</option>
+                    <% options.sumberAnggaran.forEach(sa => { %>
+                        <option value="<%= sa %>"><%= sa %></option>
+                    <% }) %>
+                </select>
+            </div>
+             <div class="col-md-4 mb-3">
+                <label for="tahunPerolehan" class="form-label">Tahun Perolehan</label>
+                <input type="number" class="form-control" id="tahunPerolehan" name="tahunPerolehan" placeholder="Contoh: 2024" min="1900" max="<%= new Date().getFullYear() %>" required>
+            </div>
         </div>
 
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="jumlah" class="form-label">Jumlah</label>
-                <input type="number" class="form-control" id="jumlah" name="jumlah" required>
+                <input type="number" class="form-control" id="jumlah" name="jumlah" min="1" required>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="satuan" class="form-label">Satuan</label>
@@ -64,7 +70,7 @@
             </div>
             <div class="col-md-4 mb-3">
                  <label for="nilaiPerolehan" class="form-label">Nilai Perolehan (Rp)</label>
-                <input type="number" class="form-control" id="nilaiPerolehan" name="nilaiPerolehan" step="1000" placeholder="Contoh: 5000000" required>
+                <input type="number" class="form-control" id="nilaiPerolehan" name="nilaiPerolehan" step="1" min="0" placeholder="Contoh: 5000000" required>
             </div>
         </div>
 
@@ -74,7 +80,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="statusKondisi" class="form-label">Status Kondisi</label>
+            <label for="statusKondisi" class="form-label">Status Kondisi Awal</label>
             <select class="form-select" id="statusKondisi" name="statusKondisi" required>
                 <option value="" disabled selected>-- Pilih Status --</option>
                 <% options.statusKondisi.forEach(s => { %>
