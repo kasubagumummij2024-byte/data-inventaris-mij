@@ -6,7 +6,7 @@
     <form action="/update/<%= item.id %>" method="POST">
         <div class="mb-3">
             <label for="nomorInventaris" class="form-label">Nomor Inventaris</label>
-            <input type="text" class="form-control" id="nomorInventaris" name="nomorInventaris" value="<%= item.nomorInventaris %>" readonly disabled> <!-- Disabled agar tidak terkirim -->
+            <input type="text" class="form-control" id="nomorInventaris" name="nomorInventaris" value="<%= item.nomorInventaris %>" readonly disabled>
         </div>
 
         <div class="row">
@@ -37,7 +37,6 @@
             <div class="col-md-6 mb-3">
                 <label for="subKategori" class="form-label">Sub Kategori</label>
                 <select class="form-select" id="subKategori" name="subKategori" required>
-                    <!-- Script main.js akan mengisi opsi, kita set value awalnya di sini -->
                     <option value="<%= item.subKategori %>" selected><%= item.subKategori %></option>
                 </select>
             </div>
@@ -79,12 +78,18 @@
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="lokasiFisik" class="form-label">Lokasi Fisik Terkini</label>
-            <input type="text" class="form-control" id="lokasiFisik" name="lokasiFisik" value="<%= item.lokasiFisik %>" required>
-             <small class="form-text text-muted">Lokasi awal: <%= item.lokasiFisik_awal %></small>
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label for="lokasiFisik" class="form-label">Lokasi Fisik Terkini</label>
+                <input type="text" class="form-control" id="lokasiFisik" name="lokasiFisik" value="<%= item.lokasiFisik %>" required>
+                 <small class="form-text text-muted">Lokasi awal: <%= item.lokasiFisik_awal %></small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="noPintuLokasi" class="form-label">No. Pintu/Detail Lokasi Terkini</label>
+                <input type="text" class="form-control" id="noPintuLokasi" name="noPintuLokasi" value="<%= item.noPintuLokasi || '' %>" placeholder="Contoh: P.01 / Lemari B">
+                 <small class="form-text text-muted">No. Pintu awal: <%= item.noPintuLokasi_awal || 'N/A' %></small>
+            </div>
         </div>
-
         <div class="mb-3">
             <label for="statusKondisi" class="form-label">Status Kondisi Terkini</label>
             <select class="form-select" id="statusKondisi" name="statusKondisi" required>
@@ -95,7 +100,6 @@
              <small class="form-text text-muted">Kondisi awal: <%= item.statusKondisi_awal %></small>
         </div>
 
-        <!-- Blok Informasi Penghapusan -->
         <fieldset class="border p-3 mt-4 rounded">
             <legend class="float-none w-auto px-2 h6">Informasi Penghapusan Aset</legend>
             <div class="row">
@@ -118,9 +122,6 @@
             </div>
             <small class="form-text text-muted">Isi bagian ini hanya jika status penghapusan BUKAN 'Masih Digunakan'. Tanggal Penghapusan wajib diisi jika status diubah.</small>
         </fieldset>
-        <!-- Akhir Blok Penghapusan -->
-
-
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill"></i> Update Barang</button>
             <a href="/" class="btn btn-secondary">Batal</a>

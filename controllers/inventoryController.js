@@ -14,15 +14,14 @@ function getRomanMonth(monthNumber) {
 
 const masterKategori = { 'Aset Kantor & Furnitur': ['Meja', 'Kursi', 'Lemari', 'Papan Tulis', 'Lainnya'],'Perangkat Elektronik & IT': ['Komputer', 'Laptop', 'Printer', 'Proyektor', 'Server', 'Jaringan', 'Lainnya'],'ATK & Habis Pakai': ['Kertas', 'Alat Tulis', 'Tinta & Toner', 'Baterai', 'Lainnya'],'Perlengkapan Operasional': ['Mesin', 'Peralatan Tangan', 'Alat Ukur', 'APD', 'Lainnya'],'Aset Kendaraan': ['Mobil', 'Motor', 'Lainnya'],'Kebersihan & Maintenance': ['Alat Kebersihan', 'Bahan Pembersih', 'Lainnya'],'Lain-lain': ['Lain-lain'] };
 const kodeKategoriMap = { 'Aset Kantor & Furnitur': 'AKF','Perangkat Elektronik & IT': 'EIT','ATK & Habis Pakai': 'ATK','Perlengkapan Operasional': 'OPS','Aset Kendaraan': 'KDN','Kebersihan & Maintenance': 'KMT','Lain-lain': 'LLN' };
-
-// Menambahkan Warna dan status penghapusan ke dropdown
 const kodeSumberAnggaranMap = { 'BOS KB': 'BOSKB', 'BOS RA': 'BOSRA', 'BOS MI': 'BOSMI', 'BOS MTs': 'BOSMTS', 'BOS MA': 'BOSMA','BOP KB': 'BOPKB', 'BOP RA': 'BOPRA','KAS KB': 'KASKB', 'KAS RA': 'KASRA', 'KAS MI': 'KASMI', 'KAS MTS': 'KASMTS', 'KAS MA': 'KASMA','HIBAH': 'HBH', 'SPONSORSHIP': 'SPS', 'MANDIRI': 'MDR', 'LAIN-LAIN': 'LLN' };
+
 const dropdownOptions = {
     satuan: ['Unit', 'Pcs', 'Set', 'Lusin', 'Box', 'Roll', 'Kg', 'Liter'],
     statusKondisi: ['Baik', 'Perlu Perbaikan', 'Rusak', 'Dalam Proses Perbaikan', 'Habis'],
     warna: ['Hitam', 'Putih', 'Abu-abu', 'Silver', 'Merah', 'Biru', 'Hijau', 'Kuning', 'Coklat', 'Oranye', 'Lainnya'],
     sumberAnggaran: Object.keys(kodeSumberAnggaranMap),
-    statusPenghapusan: ['Masih Digunakan', 'Dibuang', 'Dihibahkan', 'Dilelang'] // Tambah status penghapusan
+    statusPenghapusan: ['Masih Digunakan', 'Dibuang', 'Dihibahkan', 'Dilelang']
 };
 
 exports.getAllItems = async (req, res) => {
@@ -68,28 +67,28 @@ exports.createItem = async (req, res) => {
         const nomorUrutPadded = String(newNomorUrut).padStart(4, '0');
         const kodeKategori = kodeKategoriMap[kategori] || 'ERR';
         const kodeAnggaran = kodeSumberAnggaranMap[sumberAnggaran] || 'ERR';
-
-        // Format baru dengan kode sumber anggaran
         const nomorInventaris = `${nomorUrutPadded}/${kodeKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
 
         const newItem = {
             namaBarang: req.body.namaBarang,
             kategori: req.body.kategori,
             subKategori: req.body.subKategori,
-            warna: req.body.warna, // Warna
-            sumberAnggaran: req.body.sumberAnggaran, // Sumber Anggaran
-            tahunPerolehan: parseInt(req.body.tahunPerolehan), // Tahun Perolehan
+            warna: req.body.warna,
+            sumberAnggaran: req.body.sumberAnggaran,
+            tahunPerolehan: parseInt(req.body.tahunPerolehan),
             jumlah: parseInt(req.body.jumlah),
             satuan: req.body.satuan,
             nilaiPerolehan: parseFloat(req.body.nilaiPerolehan),
             lokasiFisik: req.body.lokasiFisik,
+            noPintuLokasi: req.body.noPintuLokasi || null, // Tambah No Pintu
             statusKondisi: req.body.statusKondisi,
             
             jumlah_awal: parseInt(req.body.jumlah),
             lokasiFisik_awal: req.body.lokasiFisik,
+            noPintuLokasi_awal: req.body.noPintuLokasi || null, // Simpan No Pintu awal
             statusKondisi_awal: req.body.statusKondisi,
             
-            statusPenghapusan: 'Masih Digunakan', // Default status penghapusan
+            statusPenghapusan: 'Masih Digunakan',
             dasarPenghapusan: null,
             tanggalPenghapusan: null,
             
@@ -113,7 +112,6 @@ exports.getEditItemForm = async (req, res) => {
         if (!doc.exists) return res.status(404).send('Barang tidak ditemukan');
         
         let itemData = doc.data();
-        // Format tanggal penghapusan untuk input type="date"
         if (itemData.tanggalPenghapusan && itemData.tanggalPenghapusan.toDate) {
              const dt = itemData.tanggalPenghapusan.toDate();
              itemData.tanggalPenghapusanFormatted = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
@@ -124,7 +122,7 @@ exports.getEditItemForm = async (req, res) => {
         res.render('form-edit', {
             item: { id: doc.id, ...itemData },
             masterKategori,
-            options: dropdownOptions // Kirim semua opsi dropdown
+            options: dropdownOptions
         });
     } catch (error) {
         res.status(500).send(error.message);
@@ -133,30 +131,30 @@ exports.getEditItemForm = async (req, res) => {
 
 exports.updateItem = async (req, res) => {
     try {
-        const { nomorInventaris, ...restOfBody } = req.body; // Ambil nomorInventaris agar tidak ikut terupdate
+        const { nomorInventaris, ...restOfBody } = req.body;
         
         let tanggalPenghapusanValue = null;
         if (req.body.tanggalPenghapusan) {
              tanggalPenghapusanValue = new Date(req.body.tanggalPenghapusan);
-             if (isNaN(tanggalPenghapusanValue.getTime())) { // Handle jika format tanggal salah
+             if (isNaN(tanggalPenghapusanValue.getTime())) {
                  tanggalPenghapusanValue = null;
              }
         }
 
         const updatedItem = {
-            ...restOfBody, // Masukkan semua data lain dari form
-            tahunPerolehan: parseInt(req.body.tahunPerolehan), // Pastikan format angka
-            jumlah: parseInt(req.body.jumlah), // Pastikan format angka
-            nilaiPerolehan: parseFloat(req.body.nilaiPerolehan), // Pastikan format angka
-            statusPenghapusan: req.body.statusPenghapusan, // Data penghapusan
-            dasarPenghapusan: req.body.dasarPenghapusan || null, // Simpan null jika kosong
-            tanggalPenghapusan: tanggalPenghapusanValue, // Simpan sebagai Timestamp atau null
-            
+            ...restOfBody,
+            tahunPerolehan: parseInt(req.body.tahunPerolehan),
+            jumlah: parseInt(req.body.jumlah),
+            nilaiPerolehan: parseFloat(req.body.nilaiPerolehan),
+            noPintuLokasi: req.body.noPintuLokasi || null, // Update No Pintu
+            statusPenghapusan: req.body.statusPenghapusan,
+            dasarPenghapusan: req.body.dasarPenghapusan || null,
+            tanggalPenghapusan: tanggalPenghapusanValue,
             updatedAt: new Date(),
             updatedBy: req.user.email
         };
         
-        delete updatedItem.tanggalPenghapusanFormatted; // Hapus field bantu
+        delete updatedItem.tanggalPenghapusanFormatted;
 
         await inventarisCollection.doc(req.params.id).update(updatedItem);
         res.redirect('/');
@@ -196,7 +194,7 @@ exports.downloadExcel = async (req, res) => {
         const workbook = new exceljs.Workbook();
         const worksheet = workbook.addWorksheet('Data Inventaris Lengkap');
 
-        // Update kolom Excel
+        // Tambah kolom No Pintu Lokasi
         worksheet.columns = [
             { header: 'QR Code', key: 'qr', width: 15 },
             { header: 'Nomor Inventaris', key: 'nomorInventaris', width: 30 },
@@ -210,6 +208,8 @@ exports.downloadExcel = async (req, res) => {
             { header: 'Kondisi Terkini', key: 'statusKondisi', width: 20 },
             { header: 'Lokasi Awal', key: 'lokasiFisik_awal', width: 30 },
             { header: 'Lokasi Terkini', key: 'lokasiFisik', width: 30 },
+            { header: 'No. Pintu Awal', key: 'noPintuLokasi_awal', width: 15 }, // Tambah
+            { header: 'No. Pintu Terkini', key: 'noPintuLokasi', width: 15 }, // Tambah
             { header: 'Jumlah Awal', key: 'jumlah_awal', width: 15 },
             { header: 'Jumlah Terkini', key: 'jumlah', width: 15 },
             { header: 'Satuan', key: 'satuan', width: 10 },
@@ -233,11 +233,13 @@ exports.downloadExcel = async (req, res) => {
             }
 
             const row = worksheet.addRow({
-                ...item, // Masukkan semua data item
+                ...item,
                 createdAt: item.createdAt.toDate ? item.createdAt.toDate().toLocaleString('id-ID') : '',
                 updatedAt: item.updatedAt.toDate ? item.updatedAt.toDate().toLocaleString('id-ID') : '',
                 updatedBy: item.updatedBy || '',
-                tanggalPenghapusan: tanggalPenghapusanFormatted, // Gunakan tanggal yang sudah diformat
+                tanggalPenghapusan: tanggalPenghapusanFormatted,
+                noPintuLokasi_awal: item.noPintuLokasi_awal || '', // Tampilkan string kosong jika null
+                noPintuLokasi: item.noPintuLokasi || '', // Tampilkan string kosong jika null
             });
 
             row.height = 80;
@@ -254,7 +256,7 @@ exports.downloadExcel = async (req, res) => {
         }
 
         res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition','attachment; filename=' + 'Laporan_Inventaris_Lengkap_MIJ.xlsx');
+        res.setHeader('Content-Disposition','attachment; filename=' + 'Laporan_Inventaris_Lengkap_MIJ_v2.xlsx');
         
         await workbook.xlsx.write(res);
         res.end();
@@ -268,11 +270,11 @@ exports.downloadTemplate = async (req, res) => {
     try {
         const workbook = new exceljs.Workbook();
         const petunjukSheet = workbook.addWorksheet('Petunjuk');
-        petunjukSheet.getColumn('A').width = 80; petunjukSheet.getCell('A1').value = 'PETUNJUK PENGISIAN TEMPLATE INVENTARIS MIJ'; petunjukSheet.getCell('A1').font = { bold: true, size: 16 }; petunjukSheet.getCell('A3').value = '1. Jangan mengubah, menghapus, atau menambah kolom (header) di sheet "Data Inventaris".'; petunjukSheet.getCell('A4').value = '2. Isi data mulai dari baris kedua di sheet "Data Inventaris".'; petunjukSheet.getCell('A5').value = '3. Untuk kolom Kategori, Satuan, Status Kondisi, Warna, dan Sumber Anggaran, WAJIB memilih dari daftar dropdown.'; petunjukSheet.getCell('A6').value = '4. Untuk kolom Nilai Perolehan dan Tahun Perolehan, masukkan angka saja tanpa "Rp" atau titik (contoh: 5000000 / 2024).'; petunjukSheet.getCell('A7').value = '5. Kolom terkait Penghapusan dikosongkan saat input awal.'; petunjukSheet.getCell('A8').value = '6. Setelah selesai, simpan file ini dan unggah melalui WebApp Inventaris.';
+        petunjukSheet.getColumn('A').width = 80; petunjukSheet.getCell('A1').value = 'PETUNJUK PENGISIAN TEMPLATE INVENTARIS MIJ'; petunjukSheet.getCell('A1').font = { bold: true, size: 16 }; petunjukSheet.getCell('A3').value = '1. Jangan mengubah, menghapus, atau menambah kolom (header) di sheet "Data Inventaris".'; petunjukSheet.getCell('A4').value = '2. Isi data mulai dari baris kedua di sheet "Data Inventaris".'; petunjukSheet.getCell('A5').value = '3. Untuk kolom Kategori, Satuan, Status Kondisi, Warna, dan Sumber Anggaran, WAJIB memilih dari daftar dropdown.'; petunjukSheet.getCell('A6').value = '4. Untuk kolom Nilai Perolehan dan Tahun Perolehan, masukkan angka saja tanpa "Rp" atau titik (contoh: 5000000 / 2024).'; petunjukSheet.getCell('A7').value = '5. Kolom terkait Penghapusan dikosongkan saat input awal.'; petunjukSheet.getCell('A8').value = '6. No. Pintu Lokasi diisi jika ada, jika tidak kosongkan.'; petunjukSheet.getCell('A9').value = '7. Setelah selesai, simpan file ini dan unggah melalui WebApp Inventaris.';
 
         const dataSheet = workbook.addWorksheet('Data Inventaris');
         
-        // Update kolom template Excel
+        // Tambah kolom No Pintu ke template
         dataSheet.columns = [
             { header: 'Nama Barang', key: 'namaBarang', width: 40 },
             { header: 'Kategori', key: 'kategori', width: 30 },
@@ -284,6 +286,7 @@ exports.downloadTemplate = async (req, res) => {
             { header: 'Satuan', key: 'satuan', width: 15 },
             { header: 'Nilai Perolehan (Rp)', key: 'nilaiPerolehan', width: 25 },
             { header: 'Lokasi Fisik', key: 'lokasiFisik', width: 40 },
+            { header: 'No. Pintu Lokasi', key: 'noPintuLokasi', width: 20 }, // Tambah
             { header: 'Status Kondisi', key: 'statusKondisi', width: 25 },
             { header: 'Status Penghapusan', key: 'statusPenghapusan', width: 20 },
             { header: 'Dasar Penghapusan', key: 'dasarPenghapusan', width: 30 },
@@ -292,16 +295,16 @@ exports.downloadTemplate = async (req, res) => {
         dataSheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
         dataSheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF203764' } };
         
-        const lastRow = 1001; // Jumlah baris validasi
+        const lastRow = 1001;
         dataSheet.dataValidations.add(`B2:B${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${Object.keys(masterKategori).join(',')}"`] });
         dataSheet.dataValidations.add(`D2:D${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.warna.join(',')}"`] });
         dataSheet.dataValidations.add(`E2:E${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.sumberAnggaran.join(',')}"`] });
         dataSheet.dataValidations.add(`H2:H${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.satuan.join(',')}"`] });
-        dataSheet.dataValidations.add(`K2:K${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.statusKondisi.join(',')}"`] });
-        dataSheet.dataValidations.add(`L2:L${lastRow}`, { type: 'list', allowBlank: true, formulae: [`"${dropdownOptions.statusPenghapusan.join(',')}"`] }); // Status penghapusan boleh kosong
+        dataSheet.dataValidations.add(`L2:L${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.statusKondisi.join(',')}"`] }); // Kolom L sekarang Status Kondisi
+        dataSheet.dataValidations.add(`M2:M${lastRow}`, { type: 'list', allowBlank: true, formulae: [`"${dropdownOptions.statusPenghapusan.join(',')}"`] }); // Kolom M sekarang Status Penghapusan
 
         res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition','attachment; filename=' + 'Template-Inventaris-MIJ-v3.xlsx'); // Nama template baru
+        res.setHeader('Content-Disposition','attachment; filename=' + 'Template-Inventaris-MIJ-v4.xlsx'); // Nama template baru
         
         await workbook.xlsx.write(res);
         res.end();
@@ -321,7 +324,7 @@ exports.uploadExcel = async (req, res) => {
         
         worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
             if (rowNumber > 1) {
-                // Update pembacaan kolom dari Excel
+                // Baca No Pintu dari Excel
                 const itemData = {
                     namaBarang: row.getCell(1).value,
                     kategori: row.getCell(2).value,
@@ -333,13 +336,13 @@ exports.uploadExcel = async (req, res) => {
                     satuan: row.getCell(8).value,
                     nilaiPerolehan: parseFloat(row.getCell(9).value),
                     lokasiFisik: row.getCell(10).value,
-                    statusKondisi: row.getCell(11).value,
-                    statusPenghapusanExcel: row.getCell(12).value,
-                    dasarPenghapusanExcel: row.getCell(13).value,
-                    tanggalPenghapusanExcel: row.getCell(14).value,
+                    noPintuLokasi: row.getCell(11).value || null, // Tambah
+                    statusKondisi: row.getCell(12).value,
+                    statusPenghapusanExcel: row.getCell(13).value,
+                    dasarPenghapusanExcel: row.getCell(14).value,
+                    tanggalPenghapusanExcel: row.getCell(15).value,
                 };
                 
-                // Update validasi dasar
                 if (!itemData.namaBarang || !itemData.kategori || !itemData.subKategori || !itemData.sumberAnggaran || !itemData.tahunPerolehan) {
                     throw new Error(`Data tidak valid di baris ${rowNumber}. Nama Barang, Kategori, Sub Kategori, Sumber Anggaran, dan Tahun Perolehan wajib diisi.`);
                 }
@@ -373,7 +376,7 @@ exports.uploadExcel = async (req, res) => {
             const kodeKategori = kodeKategoriMap[item.kategori] || 'ERR';
             const kodeAnggaran = kodeSumberAnggaranMap[item.sumberAnggaran] || 'ERR';
             const nomorUrutPadded = String(lastNumber).padStart(4, '0');
-            const nomorInventaris = `${nomorUrutPadded}/${kodeKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`; // Format nomor baru
+            const nomorInventaris = `${nomorUrutPadded}/${kodeKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
             
             let tanggalPenghapusanValue = null;
             if (item.tanggalPenghapusanExcel instanceof Date) {
@@ -390,20 +393,22 @@ exports.uploadExcel = async (req, res) => {
                 namaBarang: item.namaBarang,
                 kategori: item.kategori,
                 subKategori: item.subKategori,
-                warna: item.warna, // Warna
-                sumberAnggaran: item.sumberAnggaran, // Sumber Anggaran
-                tahunPerolehan: item.tahunPerolehan, // Tahun Perolehan
+                warna: item.warna,
+                sumberAnggaran: item.sumberAnggaran,
+                tahunPerolehan: item.tahunPerolehan,
                 jumlah: item.jumlah,
                 satuan: item.satuan,
                 nilaiPerolehan: item.nilaiPerolehan,
                 lokasiFisik: item.lokasiFisik,
+                noPintuLokasi: item.noPintuLokasi || null, // Tambah
                 statusKondisi: item.statusKondisi,
                 
                 jumlah_awal: item.jumlah,
                 lokasiFisik_awal: item.lokasiFisik,
+                noPintuLokasi_awal: item.noPintuLokasi || null, // Tambah
                 statusKondisi_awal: item.statusKondisi,
 
-                statusPenghapusan: item.statusPenghapusanExcel || 'Masih Digunakan', // Data penghapusan
+                statusPenghapusan: item.statusPenghapusanExcel || 'Masih Digunakan',
                 dasarPenghapusan: item.dasarPenghapusanExcel || null,
                 tanggalPenghapusan: tanggalPenghapusanValue,
 
@@ -424,4 +429,3 @@ exports.uploadExcel = async (req, res) => {
         res.redirect(`/?uploadStatus=error&message=${encodeURIComponent(error.message)}`);
     }
 };
-

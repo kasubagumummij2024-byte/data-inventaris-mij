@@ -3,7 +3,6 @@
 <div class="card shadow-sm">
     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         <h2 class="h4 mb-0">Detail Inventaris: <%= item.nomorInventaris %></h2>
-        <!-- Tombol Edit hanya muncul jika user login -->
         <% if (user) { %>
             <a href="/edit/<%= item.id %>" class="btn btn-outline-light btn-sm"><i class="bi bi-pencil-square"></i> Edit</a>
         <% } %>
@@ -60,11 +59,17 @@
                             <th scope="row">Lokasi Awal</th>
                             <td><%= item.lokasiFisik_awal || 'N/A' %></td>
                         </tr>
+                         <tr>
+                            <th scope="row">No. Pintu Awal</th> <td><%= item.noPintuLokasi_awal || 'N/A' %></td>
+                        </tr>
                         <tr>
                             <th scope="row">Lokasi Terkini</th>
                             <td><%= item.lokasiFisik %></td>
                         </tr>
-                         <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Jumlah</td></tr>
+                         <tr>
+                            <th scope="row">No. Pintu Terkini</th> <td><%= item.noPintuLokasi || 'N/A' %></td>
+                        </tr>
+                        <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Jumlah</td></tr>
                          <tr>
                             <th scope="row">Jumlah Awal</th>
                             <td><%= item.jumlah_awal || 'N/A' %> <%= item.satuan %></td>
@@ -83,7 +88,6 @@
                             <td><%= item.updatedBy && item.updatedAt.toDate().getTime() !== item.createdAt.toDate().getTime() ? `${item.updatedBy} <br><small class="text-muted">${item.updatedAt.toDate().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short'})}</small>` : '<span class="text-muted">Belum ada update</span>' %></td>
                         </tr>
                         
-                        <!-- Informasi Penghapusan (jika ada) -->
                         <% if (item.statusPenghapusan && item.statusPenghapusan !== 'Masih Digunakan') { %>
                         <tr><td colspan="2" class="bg-danger fw-bold text-white text-center">Informasi Penghapusan Aset</td></tr>
                         <tr class="table-danger">
