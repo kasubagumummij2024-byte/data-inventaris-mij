@@ -19,13 +19,14 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="kategori" class="form-label">Kategori</label>
-                <select class="form-select" id="kategori" name="kategori" data-master="<%= JSON.stringify(masterKategori) %>" required>
+                <!-- DIUBAH: data-master sekarang pakai dataMasterLengkap -->
+                <select class="form-select" id="kategori" name="kategori" data-master="<%= JSON.stringify(dataMasterLengkap) %>" required>
                     <option value="" disabled selected>-- Pilih Kategori --</option>
-                    <% Object.keys(masterKategori).forEach(k => { %>
+                    <% Object.keys(dataMasterLengkap).forEach(k => { %>
                         <option value="<%= k %>"><%= k %></option>
                     <% }) %>
                 </select>
@@ -85,6 +86,7 @@
                 <input type="text" class="form-control" id="noPintuLokasi" name="noPintuLokasi" placeholder="Contoh: P.01 / Lemari B">
             </div>
         </div>
+
         <div class="mb-3">
             <label for="statusKondisi" class="form-label">Status Kondisi Awal</label>
             <select class="form-select" id="statusKondisi" name="statusKondisi" required>
@@ -94,7 +96,7 @@
                 <% }) %>
             </select>
         </div>
-        
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success"><i class="bi bi-save-fill"></i> Simpan Barang</button>
             <a href="/" class="btn btn-secondary">Batal</a>

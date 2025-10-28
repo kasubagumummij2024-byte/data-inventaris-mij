@@ -60,14 +60,16 @@
                             <td><%= item.lokasiFisik_awal || 'N/A' %></td>
                         </tr>
                          <tr>
-                            <th scope="row">No. Pintu Awal</th> <td><%= item.noPintuLokasi_awal || 'N/A' %></td>
+                            <th scope="row">No. Pintu Awal</th>
+                            <td><%= item.noPintuLokasi_awal || 'N/A' %></td>
                         </tr>
                         <tr>
                             <th scope="row">Lokasi Terkini</th>
                             <td><%= item.lokasiFisik %></td>
                         </tr>
                          <tr>
-                            <th scope="row">No. Pintu Terkini</th> <td><%= item.noPintuLokasi || 'N/A' %></td>
+                            <th scope="row">No. Pintu Terkini</th>
+                            <td><%= item.noPintuLokasi || 'N/A' %></td>
                         </tr>
                         <tr><td colspan="2" class="bg-light fw-bold text-center">Riwayat Jumlah</td></tr>
                          <tr>
@@ -87,7 +89,8 @@
                             <th scope="row">Update Terakhir oleh</th>
                             <td><%= item.updatedBy && item.updatedAt.toDate().getTime() !== item.createdAt.toDate().getTime() ? `${item.updatedBy} <br><small class="text-muted">${item.updatedAt.toDate().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short'})}</small>` : '<span class="text-muted">Belum ada update</span>' %></td>
                         </tr>
-                        
+
+                        <!-- Informasi Penghapusan (jika ada) -->
                         <% if (item.statusPenghapusan && item.statusPenghapusan !== 'Masih Digunakan') { %>
                         <tr><td colspan="2" class="bg-danger fw-bold text-white text-center">Informasi Penghapusan Aset</td></tr>
                         <tr class="table-danger">
@@ -117,6 +120,6 @@
         </div>
     </div>
 </div>
-<a href="/" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> Kembali ke Daftar</a>
+<a href="/" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left-circle"></i> Kembali ke Daftar Utama</a>
 
 <%- include('partials/footer') %>

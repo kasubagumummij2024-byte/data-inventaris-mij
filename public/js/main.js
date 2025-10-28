@@ -3,39 +3,48 @@ document.addEventListener('DOMContentLoaded', function() {
     const kategoriSelect = document.getElementById('kategori');
     const subKategoriSelect = document.getElementById('subKategori');
 
-    // Cek apakah elemen ada di halaman
     if (kategoriSelect && subKategoriSelect) {
-        // Ambil data master dari atribut data-* yang kita set di EJS
-        const masterKategori = JSON.parse(kategoriSelect.dataset.master);
+        // DIUBAH: Ambil data master baru dari atribut data-*
+        const dataMasterLengkap = JSON.parse(kategoriSelect.dataset.master);
 
         function updateSubKategori() {
             const selectedKategori = kategoriSelect.value;
-            const subKategoriOptions = masterKategori[selectedKategori] || [];
-            
-            // Simpan nilai sub kategori yang sedang dipilih (untuk form edit)
-            const currentSubKategoriValue = subKategoriSelect.value;
+            // DIUBAH: Ambil daftar subkategori dari struktur baru
+            const subKategoriObject = dataMasterLengkap[selectedKategori] || {};
+            const subKategoriOptions = Object.keys(subKategoriObject); // Ambil nama-nama subkategori
 
-            // Kosongkan pilihan sub kategori
+            const currentSubKategoriValue = subKategoriSelect.value;
             subKategoriSelect.innerHTML = '<option value="" disabled selected>-- Pilih Sub Kategori --</option>';
 
-            // Isi dengan pilihan yang baru
             subKategoriOptions.forEach(sub => {
                 const option = document.createElement('option');
-                option.value = sub;
+                option.value = sub; // Value tetap nama subkategori
                 option.textContent = sub;
                 subKategoriSelect.appendChild(option);
             });
-            
-            // Set kembali nilai yang sebelumnya terpilih jika masih ada di opsi baru
+
+            // Set kembali nilai yang sebelumnya terpilih (untuk form edit)
+            // Cek dataset initialValue jika ada
+            const initialValue = subKategoriSelect.dataset.initialValue;
             if (subKategoriOptions.includes(currentSubKategoriValue)) {
-                subKategoriSelect.value = currentSubKategoriValue;
+                 subKategoriSelect.value = currentSubKategoriValue;
+            } else if (initialValue && subKategoriOptions.includes(initialValue)) {
+                 // Jika nilai saat ini tidak valid TAPI nilai awal valid, gunakan nilai awal
+                 subKategoriSelect.value = initialValue;
+                 // Hapus initial value agar tidak terpilih lagi jika kategori diubah lagi
+                 delete subKategoriSelect.dataset.initialValue;
             }
         }
 
-        // Panggil fungsi saat halaman dimuat (untuk form edit)
+        // Simpan nilai awal untuk form edit (hanya jika ada nilai terpilih)
+        if (subKategoriSelect.options.length > 0 && subKategoriSelect.options[0].value !== "" && subKategoriSelect.options[0].selected) {
+             subKategoriSelect.dataset.initialValue = subKategoriSelect.options[0].value;
+        }
+
+
+        // Panggil saat halaman dimuat (penting untuk form edit)
         updateSubKategori();
 
-        // Panggil fungsi setiap kali kategori berubah
         kategoriSelect.addEventListener('change', updateSubKategori);
     }
 });

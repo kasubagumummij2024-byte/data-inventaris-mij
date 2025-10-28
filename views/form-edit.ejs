@@ -23,13 +23,14 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="kategori" class="form-label">Kategori</label>
-                <select class="form-select" id="kategori" name="kategori" data-master="<%= JSON.stringify(masterKategori) %>" required>
+                 <!-- DIUBAH: data-master sekarang pakai dataMasterLengkap -->
+                <select class="form-select" id="kategori" name="kategori" data-master="<%= JSON.stringify(dataMasterLengkap) %>" required>
                     <option value="" disabled>-- Pilih Kategori --</option>
-                    <% Object.keys(masterKategori).forEach(k => { %>
+                    <% Object.keys(dataMasterLengkap).forEach(k => { %>
                         <option value="<%= k %>" <%= item.kategori === k ? 'selected' : '' %>><%= k %></option>
                     <% }) %>
                 </select>
@@ -37,6 +38,7 @@
             <div class="col-md-6 mb-3">
                 <label for="subKategori" class="form-label">Sub Kategori</label>
                 <select class="form-select" id="subKategori" name="subKategori" required>
+                    <!-- Script main.js akan mengisi opsi, kita set value awalnya di sini -->
                     <option value="<%= item.subKategori %>" selected><%= item.subKategori %></option>
                 </select>
             </div>
@@ -90,6 +92,7 @@
                  <small class="form-text text-muted">No. Pintu awal: <%= item.noPintuLokasi_awal || 'N/A' %></small>
             </div>
         </div>
+
         <div class="mb-3">
             <label for="statusKondisi" class="form-label">Status Kondisi Terkini</label>
             <select class="form-select" id="statusKondisi" name="statusKondisi" required>
@@ -122,6 +125,7 @@
             </div>
             <small class="form-text text-muted">Isi bagian ini hanya jika status penghapusan BUKAN 'Masih Digunakan'. Tanggal Penghapusan wajib diisi jika status diubah.</small>
         </fieldset>
+
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary"><i class="bi bi-save-fill"></i> Update Barang</button>
             <a href="/" class="btn btn-secondary">Batal</a>
