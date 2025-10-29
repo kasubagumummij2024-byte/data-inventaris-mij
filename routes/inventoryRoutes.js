@@ -10,12 +10,13 @@ const upload = multer({ storage: multer.memoryStorage() });
 // === RUTE PUBLIK ===
 router.get('/', inventoryController.getAllItems);
 router.get('/barang/:id', inventoryController.getItemDetail);
-router.get('/download-excel', inventoryController.downloadExcel); // Laporan Utama
-router.get('/download-template', inventoryController.downloadTemplate); // Template Kosong
-router.get('/referensi-kode', inventoryController.getReferensiKodePage); // Halaman Referensi
-
-// BARU: Rute untuk download Excel Referensi
+router.get('/download-excel', inventoryController.downloadExcel); // Laporan LENGKAP
+router.get('/download-template', inventoryController.downloadTemplate);
+router.get('/referensi-kode', inventoryController.getReferensiKodePage);
 router.get('/download-referensi', inventoryController.downloadReferensiExcel);
+
+// BARU: Rute khusus untuk men-download Laporan Label
+router.get('/download-label', inventoryController.downloadLabelSheet);
 
 
 // === RUTE TERPROTEKSI ===

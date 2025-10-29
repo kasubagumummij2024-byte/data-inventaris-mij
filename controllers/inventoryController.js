@@ -14,7 +14,6 @@ function getRomanMonth(monthNumber) {
 
 // =======================================================
 // DATA MASTER LENGKAP BARU (Berdasarkan CSV Anda - FINAL)
-// Struktur: { Kategori: { SubKategori: { kode: 'KODE-SUB', contoh: 'Contoh...' }, ... }, ... }
 // =======================================================
 const dataMasterLengkap = {
   'Aset Kantor & Furnitur': {
@@ -24,7 +23,7 @@ const dataMasterLengkap = {
     'Etalase / Loker': { kode: 'AKF-04', contoh: 'Etalase kaca, loker siswa, loker staf, rak display' },
     'Sofa': { kode: 'AKF-05', contoh: 'Sofa tamu, sofa ruang kepala, sofa lobi' },
     'Rak / Laci / Papan Tulis': { kode: 'AKF-06', contoh: 'Rak buku, rak dokumen, laci meja, papan tulis putih, papan pengumuman' },
-    'Lainnya (Aset Kantor)': { kode: 'AKF-99', contoh: 'Partisi ruangan, karpet kantor, meja altar, backdrop kayu' } // Nama dibuat lebih jelas
+    'Lainnya (Aset Kantor)': { kode: 'AKF-99', contoh: 'Partisi ruangan, karpet kantor, meja altar, backdrop kayu' }
   },
   'Perangkat Elektronik & IT': {
     'Komputer / Laptop': { kode: 'EIT-01', contoh: 'PC Desktop, Laptop, Notebook, All-in-One PC' },
@@ -36,7 +35,7 @@ const dataMasterLengkap = {
     'Perangkat Audio Visual': { kode: 'EIT-07', contoh: 'Speaker Aktif, Sound System Portable, Mixer Audio, Mikrofon, TV LED' },
     'Perangkat Komunikasi': { kode: 'EIT-08', contoh: 'Telepon PABX, Mesin Fax, Walkie-Talkie' },
     'UPS & Power': { kode: 'EIT-09', contoh: 'UPS, Stabilizer (Stavolt), Power Strip (Stop Kontak)' },
-    'Aksesoris & Lainnya (Elektronik)': { kode: 'EIT-99', contoh: 'Keyboard, Mouse, Webcam, Hard Disk Eksternal, Flashdisk' } // Nama dibuat lebih jelas
+    'Aksesoris & Lainnya (Elektronik)': { kode: 'EIT-99', contoh: 'Keyboard, Mouse, Webcam, Hard Disk Eksternal, Flashdisk' }
   },
   'Alat Tulis Kantor (ATK) & Habis Pakai': {
     'Kertas & Produk Kertas': { kode: 'ATK-01', contoh: 'Kertas HVS (A4, F4, dll.), Amplop, Kertas Foto, Sticky Notes, Buku Tulis' },
@@ -44,43 +43,43 @@ const dataMasterLengkap = {
     'Perlengkapan Meja & Arsip': { kode: 'ATK-03', contoh: 'Stapler & Isi, Perforator, Gunting, Cutter, Map, Ordner, Klip, Lem' },
     'Tinta & Toner': { kode: 'ATK-04', contoh: 'Tinta Printer (Botol/Cartridge), Toner Laser' },
     'Baterai': { kode: 'ATK-05', contoh: 'Baterai AA, Baterai AAA, Baterai Kancing' },
-    'Lainnya (ATK)': { kode: 'ATK-99', contoh: 'Materai, Stempel, Bak Stempel, Kalkulator' } // Nama dibuat lebih jelas
+    'Lainnya (ATK)': { kode: 'ATK-99', contoh: 'Materai, Stempel, Bak Stempel, Kalkulator' }
   },
-  'Perlengkapan Operasional': { // Memastikan kategori ini ada
+  'Perlengkapan Operasional': {
       'Mesin & Peralatan Berat': { kode: 'OPS-01', contoh: 'Mesin fotokopi, mesin jilid, mesin potong kertas, genset' },
       'Peralatan Tangan (Tools)': { kode: 'OPS-02', contoh: 'Bor, gerinda, obeng set, kunci pas set, palu, tang' },
       'Alat Ukur & Pengujian': { kode: 'OPS-03', contoh: 'Multimeter, jangka sorong, timbangan, meteran' },
       'Alat Pelindung Diri (APD)': { kode: 'OPS-04', contoh: 'Helm safety, sarung tangan, kacamata pelindung, sepatu safety, masker' },
       'Tangga & Perancah': { kode: 'OPS-05', contoh: 'Tangga lipat aluminium, tangga multifungsi, scaffolding (jika ada)' },
       'Perlengkapan Pemadam Api': { kode: 'OPS-06', contoh: 'APAR (Tabung Pemadam Api Ringan), Hydrant (jika ada)' },
-      'Lainnya (Operasional)': { kode: 'OPS-99', contoh: 'Genset portable, pompa air, troli barang' } // Nama dibuat lebih jelas
+      'Lainnya (Operasional)': { kode: 'OPS-99', contoh: 'Genset portable, pompa air, troli barang' }
   },
    'Aset Kendaraan': {
     'Kendaraan Roda Empat': { kode: 'KDN-01', contoh: 'Mobil Operasional, Mobil Kepala Sekolah, Minibus Sekolah' },
     'Kendaraan Roda Dua': { kode: 'KDN-02', contoh: 'Motor Dinas' },
     'Kendaraan Khusus': { kode: 'KDN-03', contoh: 'Forklift, Gerobak Dorong' },
     'Aksesoris & Suku Cadang': { kode: 'KDN-04', contoh: 'Ban, Aki, Oli, Dongkrak, Helm' },
-    'Lainnya (Kendaraan)': { kode: 'KDN-99', contoh: 'Sepeda (jika ada)' } // Nama dibuat lebih jelas
+    'Lainnya (Kendaraan)': { kode: 'KDN-99', contoh: 'Sepeda (jika ada)' }
   },
   'Perlengkapan Kebersihan & Maintenance': {
     'Alat Kebersihan Manual': { kode: 'KMT-01', contoh: 'Sapu, Pel, Pengki, Sikat, Kemoceng, Wiper Kaca' },
     'Bahan Pembersih': { kode: 'KMT-02', contoh: 'Cairan pembersih, sabun, disinfektan, pewangi ruangan' },
     'Peralatan Kebersihan Khusus': { kode: 'KMT-03', contoh: 'Vacuum cleaner, mesin polisher, mesin penyedot debu' },
     'Tempat Sampah & Aksesori': { kode: 'KMT-04', contoh: 'Sulo, tong sampah, tempat sampah stainless, kantong plastik' },
-    'Lainnya (Kebersihan)': { kode: 'KMT-99', contoh: 'Ember, gayung, rak alat kebersihan' } // Nama dibuat lebih jelas
+    'Lainnya (Kebersihan)': { kode: 'KMT-99', contoh: 'Ember, gayung, rak alat kebersihan' }
   },
   'Perlengkapan Pantry & Dapur': {
     'Peralatan Makan & Masak': { kode: 'PAN-01', contoh: 'Piring, mangkuk, sendok, garpu, wajan, panci, pisau' },
     'Perlengkapan Saji': { kode: 'PAN-02', contoh: 'Nampan, tudung saji, troli saji, teko saji' },
     'Wadah Penyimpanan': { kode: 'PAN-03', contoh: 'Toples, wadah kerupuk, termos nasi, kontainer makanan' },
-    'Lainnya (Pantry)': { kode: 'PAN-99', contoh: 'Teko air, talenan, serbet dapur' } // Nama dibuat lebih jelas
+    'Lainnya (Pantry)': { kode: 'PAN-99', contoh: 'Teko air, talenan, serbet dapur' }
   },
   'Perlengkapan Ekstrakurikuler & Laboratorium': {
     'Ekstrakurikuler': { kode: 'EKS-01', contoh: 'Perlengkapan pramuka, drum band, bola futsal, net voli, alat musik' },
     'Laboratorium IPA': { kode: 'EKS-02', contoh: 'Mikroskop, tabung reaksi, alat peraga fisika/biologi/kimia' },
     'Laboratorium Komputer': { kode: 'EKS-03', contoh: 'Komputer lab, Jaringan lab, Meja lab komputer' },
     'Laboratorium Bahasa': { kode: 'EKS-04', contoh: 'Headset lab bahasa, master control lab bahasa' },
-    'Lainnya (Ekskul/Lab)': { kode: 'EKS-99', contoh: 'Perlengkapan UKS, Alat Peraga Matematika' } // Nama dibuat lebih jelas
+    'Lainnya (Ekskul/Lab)': { kode: 'EKS-99', contoh: 'Perlengkapan UKS, Alat Peraga Matematika' }
   },
   'Lain-lain': {
     'Lain-lain': { kode: 'LLN-99', contoh: 'Barang yang tidak termasuk kategori di atas' }
@@ -92,7 +91,7 @@ const kodeSumberAnggaranMap = { 'BOS KB': 'BOSKB', 'BOS RA': 'BOSRA', 'BOS MI': 
 const dropdownOptions = {
     satuan: ['Unit', 'Pcs', 'Set', 'Lusin', 'Box', 'Roll', 'Kg', 'Liter'],
     statusKondisi: ['Baik', 'Perlu Perbaikan', 'Rusak', 'Dalam Proses Perbaikan', 'Habis'],
-    warna: ['Hitam', 'Putih', 'Abu-abu', 'Silver', 'Merah', 'Biru', 'Hijau', 'Kuning', 'Coklat', 'Oranye', 'Lainnya'],
+    warna: ['Hitam', 'Putih', 'Abu-abu', 'Silver', 'Merah', 'Biru', 'Hijau', 'Kuning', 'Coklat', 'Oranye','Ungu','Pink', 'Lainnya'],
     sumberAnggaran: Object.keys(kodeSumberAnggaranMap),
     statusPenghapusan: ['Masih Digunakan', 'Dibuang', 'Dihibahkan', 'Dilelang']
 };
@@ -119,7 +118,6 @@ exports.getAllItems = async (req, res) => {
     }
 };
 
-// Mengirim data master baru ke form
 exports.getAddItemForm = (req, res) => {
     res.render('form-tambah', { dataMasterLengkap, options: dropdownOptions });
 };
@@ -143,7 +141,6 @@ exports.createItem = async (req, res) => {
         const kodeAnggaran = kodeSumberAnggaranMap[sumberAnggaran] || 'ERR';
         const kodeSubKategori = dataMasterLengkap[kategori]?.[subKategori]?.kode || 'ERR-SUB';
 
-        // Format nomor inventaris BARU
         const nomorInventaris = `${nomorUrutPadded}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
 
         const newItem = {
@@ -159,23 +156,23 @@ exports.createItem = async (req, res) => {
             lokasiFisik: req.body.lokasiFisik,
             noPintuLokasi: req.body.noPintuLokasi || null,
             statusKondisi: req.body.statusKondisi,
-
+            
             jumlah_awal: parseInt(req.body.jumlah),
             lokasiFisik_awal: req.body.lokasiFisik,
             noPintuLokasi_awal: req.body.noPintuLokasi || null,
             statusKondisi_awal: req.body.statusKondisi,
-
+            
             statusPenghapusan: 'Masih Digunakan',
             dasarPenghapusan: null,
             tanggalPenghapusan: null,
-
+            
             nomorInventaris,
             createdAt: now,
             createdBy: req.user.email,
             updatedAt: now,
             updatedBy: req.user.email,
         };
-
+        
         await inventarisCollection.add(newItem);
         res.redirect('/');
     } catch (error) {
@@ -183,12 +180,11 @@ exports.createItem = async (req, res) => {
     }
 };
 
-// Mengirim data master baru ke form edit
 exports.getEditItemForm = async (req, res) => {
     try {
         const doc = await inventarisCollection.doc(req.params.id).get();
         if (!doc.exists) return res.status(404).send('Barang tidak ditemukan');
-
+        
         let itemData = doc.data();
         if (itemData.tanggalPenghapusan && itemData.tanggalPenghapusan.toDate) {
              const dt = itemData.tanggalPenghapusan.toDate();
@@ -199,7 +195,7 @@ exports.getEditItemForm = async (req, res) => {
 
         res.render('form-edit', {
             item: { id: doc.id, ...itemData },
-            dataMasterLengkap, // Kirim data master baru
+            dataMasterLengkap,
             options: dropdownOptions
         });
     } catch (error) {
@@ -209,8 +205,8 @@ exports.getEditItemForm = async (req, res) => {
 
 exports.updateItem = async (req, res) => {
     try {
-        const { nomorInventaris, ...restOfBody } = req.body; // Nomor inventaris tidak boleh diubah
-
+        const { nomorInventaris, ...restOfBody } = req.body;
+        
         let tanggalPenghapusanValue = null;
         if (req.body.tanggalPenghapusan) {
              tanggalPenghapusanValue = new Date(req.body.tanggalPenghapusan);
@@ -231,7 +227,7 @@ exports.updateItem = async (req, res) => {
             updatedAt: new Date(),
             updatedBy: req.user.email
         };
-
+        
         delete updatedItem.tanggalPenghapusanFormatted;
 
         await inventarisCollection.doc(req.params.id).update(updatedItem);
@@ -263,7 +259,6 @@ exports.getItemDetail = async (req, res) => {
     }
 };
 
-// Fungsi untuk menampilkan halaman referensi kode
 exports.getReferensiKodePage = (req, res) => {
     const referensiData = Object.entries(dataMasterLengkap).map(([kategori, subkategorisObject]) => ({
         namaKategori: kategori,
@@ -276,31 +271,11 @@ exports.getReferensiKodePage = (req, res) => {
     res.render('referensi-kode', { referensiData });
 };
 
-// controllers/inventoryController.js
-// ... (kode lain di atasnya tetap sama) ...
-
-// Fungsi untuk menampilkan halaman referensi kode
-exports.getReferensiKodePage = (req, res) => {
-    const referensiData = Object.entries(dataMasterLengkap).map(([kategori, subkategorisObject]) => ({
-        namaKategori: kategori,
-        subkategoris: Object.entries(subkategorisObject).map(([namaSub, dataSub]) => ({
-            namaSubKategori: namaSub,
-            kodeSubKategori: dataSub.kode,
-            contohBarang: dataSub.contoh
-        }))
-    }));
-    res.render('referensi-kode', { referensiData });
-};
-
-// =======================================================
-// BARU: Fungsi untuk download data referensi sebagai Excel
-// =======================================================
 exports.downloadReferensiExcel = async (req, res) => {
     try {
         const workbook = new exceljs.Workbook();
         const worksheet = workbook.addWorksheet('Referensi Kode Inventaris');
 
-        // Definisikan kolom
         worksheet.columns = [
             { header: 'Kategori', key: 'kategori', width: 40 },
             { header: 'Sub Kategori', key: 'subKategori', width: 40 },
@@ -308,11 +283,9 @@ exports.downloadReferensiExcel = async (req, res) => {
             { header: 'Contoh Barang', key: 'contoh', width: 60 }
         ];
 
-        // Format header
         worksheet.getRow(1).font = { bold: true };
         worksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
 
-        // Iterasi dataMasterLengkap dan tambahkan baris
         Object.entries(dataMasterLengkap).forEach(([kategori, subKategorisObject]) => {
             Object.entries(subKategorisObject).forEach(([namaSub, dataSub]) => {
                 worksheet.addRow({
@@ -322,23 +295,17 @@ exports.downloadReferensiExcel = async (req, res) => {
                     contoh: dataSub.contoh
                 });
             });
-            // Tambahkan baris kosong sebagai pemisah antar kategori (opsional)
-            // worksheet.addRow({});
         });
 
-        // Atur alignment dan wrap text untuk semua sel data
         worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
-            if (rowNumber > 1) { // Lewati header
+            if (rowNumber > 1) {
                 row.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
             }
         });
 
-
-        // Set header untuk download
         res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition','attachment; filename=' + 'Referensi_Kode_Inventaris_MIJ.xlsx');
 
-        // Tulis ke response
         await workbook.xlsx.write(res);
         res.end();
 
@@ -347,12 +314,101 @@ exports.downloadReferensiExcel = async (req, res) => {
         res.status(500).send("Terjadi kesalahan saat membuat file Excel referensi.");
     }
 };
+
 // =======================================================
-
-// ... (sisa kode seperti downloadExcel, downloadTemplate, uploadExcel tetap ada) ...
-
+// FUNGSI LAPORAN LENGKAP
+// =======================================================
 exports.downloadExcel = async (req, res) => {
      try {
+        const snapshot = await inventarisCollection.orderBy('createdAt', 'asc').get();
+        let items = [];
+        snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+
+        const workbook = new exceljs.Workbook();
+        const worksheet = workbook.addWorksheet('Data Inventaris Lengkap');
+
+        worksheet.columns = [
+            { header: 'QR Code', key: 'qr', width: 15 },
+            { header: 'Nomor Inventaris', key: 'nomorInventaris', width: 30 },
+            { header: 'Nama Barang', key: 'namaBarang', width: 30 },
+            { header: 'Warna', key: 'warna', width: 15 },
+            { header: 'Sumber Anggaran', key: 'sumberAnggaran', width: 20 },
+            { header: 'Tahun Perolehan', key: 'tahunPerolehan', width: 15 },
+            { header: 'Kategori', key: 'kategori', width: 25 },
+            { header: 'Sub Kategori', key: 'subKategori', width: 20 },
+            { header: 'Kondisi Awal', key: 'statusKondisi_awal', width: 20 },
+            { header: 'Kondisi Terkini', key: 'statusKondisi', width: 20 },
+            { header: 'Lokasi Awal', key: 'lokasiFisik_awal', width: 30 },
+            { header: 'Lokasi Terkini', key: 'lokasiFisik', width: 30 },
+            { header: 'No. Pintu Awal', key: 'noPintuLokasi_awal', width: 15 },
+            { header: 'No. Pintu Terkini', key: 'noPintuLokasi', width: 15 },
+            { header: 'Jumlah Awal', key: 'jumlah_awal', width: 15 },
+            { header: 'Jumlah Terkini', key: 'jumlah', width: 15 },
+            { header: 'Satuan', key: 'satuan', width: 10 },
+            { header: 'Nilai Perolehan (Rp)', key: 'nilaiPerolehan', width: 20, style: { numFmt: '"Rp"#,##0' } },
+            { header: 'Tanggal Input Awal', key: 'createdAt', width: 20 },
+            { header: 'Diinput Oleh', key: 'createdBy', width: 25 },
+            { header: 'Tanggal Update Terakhir', key: 'updatedAt', width: 20 },
+            { header: 'Diupdate Oleh', key: 'updatedBy', width: 25 },
+            { header: 'Status Penghapusan', key: 'statusPenghapusan', width: 20 },
+            { header: 'Dasar Penghapusan', key: 'dasarPenghapusan', width: 30 },
+            { header: 'Tanggal Penghapusan', key: 'tanggalPenghapusan', width: 20 },
+        ];
+        
+        worksheet.getRow(1).font = { bold: true };
+
+        let rowNumber = 2;
+        for (const item of items) {
+            let tanggalPenghapusanFormatted = '';
+            if (item.tanggalPenghapusan && item.tanggalPenghapusan.toDate) {
+                tanggalPenghapusanFormatted = item.tanggalPenghapusan.toDate().toLocaleDateString('id-ID');
+            }
+
+            const row = worksheet.addRow({
+                ...item,
+                createdAt: item.createdAt.toDate ? item.createdAt.toDate().toLocaleString('id-ID') : '',
+                updatedAt: item.updatedAt.toDate ? item.updatedAt.toDate().toLocaleString('id-ID') : '',
+                updatedBy: item.updatedBy || '',
+                tanggalPenghapusan: tanggalPenghapusanFormatted,
+                noPintuLokasi_awal: item.noPintuLokasi_awal || '',
+                noPintuLokasi: item.noPintuLokasi || '',
+            });
+
+            row.height = 80;
+            row.eachCell({ includeEmpty: false }, cell => {
+                 cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+            });
+            row.getCell('nilaiPerolehan').alignment = { vertical: 'middle', horizontal: 'right' };
+            row.getCell('qr').alignment = { vertical: 'middle', horizontal: 'center' };
+
+
+            const url = `${req.protocol}://${req.get('host')}/barang/${item.id}`;
+            const qrBuffer = await QRCode.toBuffer(url, { type: 'png', width: 100, margin: 1 });
+            const imageId = workbook.addImage({ buffer: qrBuffer, extension: 'png' });
+            worksheet.addImage(imageId, {
+                tl: { col: 0.1, row: rowNumber - 0.9 },
+                ext: { width: 100, height: 100 }
+            });
+
+            rowNumber++;
+        }
+
+        res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition','attachment; filename=' + 'Laporan_Inventaris_Lengkap_MIJ.xlsx');
+        
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error("Gagal men-generate Excel lengkap:", error);
+        res.status(500).send(error.message);
+    }
+};
+
+// =======================================================
+// FUNGSI BARU UNTUK CETAK LABEL
+// =======================================================
+exports.downloadLabelSheet = async (req, res) => {
+    try {
         const snapshot = await inventarisCollection.orderBy('createdAt', 'asc').get();
         let items = [];
         snapshot.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
@@ -363,6 +419,7 @@ exports.downloadExcel = async (req, res) => {
         worksheet.columns = [
             { header: 'QR Code', key: 'qr', width: 15 },
             { header: 'Nomor Inventaris', key: 'nomorInventaris', width: 35 },
+            { header: 'Nama Barang', key: 'namaBarang', width: 30 },
         ];
         
         worksheet.getRow(1).font = { bold: true };
@@ -371,10 +428,12 @@ exports.downloadExcel = async (req, res) => {
         for (const item of items) {
             const row = worksheet.addRow({
                 nomorInventaris: item.nomorInventaris,
+                namaBarang: item.namaBarang,
             });
 
             row.height = 80;
-            row.getCell('B').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+            row.getCell('B').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
+            row.getCell('C').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
 
             const url = `${req.protocol}://${req.get('host')}/barang/${item.id}`;
             const qrBuffer = await QRCode.toBuffer(url, { type: 'png', width: 100, margin: 1 });
@@ -393,10 +452,11 @@ exports.downloadExcel = async (req, res) => {
         await workbook.xlsx.write(res);
         res.end();
     } catch (error) {
-        console.error("Gagal men-generate Excel dengan QR Code:", error);
+        console.error("Gagal men-generate Excel Label QR:", error);
         res.status(500).send(error.message);
     }
 };
+
 
 exports.downloadTemplate = async (req, res) => {
     try {
@@ -409,7 +469,7 @@ exports.downloadTemplate = async (req, res) => {
         dataSheet.columns = [
             { header: 'Nama Barang', key: 'namaBarang', width: 40 },
             { header: 'Kategori', key: 'kategori', width: 30 },
-            { header: 'Sub Kategori', key: 'subKategori', width: 25 }, // Tetap input manual
+            { header: 'Sub Kategori', key: 'subKategori', width: 25 },
             { header: 'Warna', key: 'warna', width: 20 },
             { header: 'Sumber Anggaran', key: 'sumberAnggaran', width: 25 },
             { header: 'Tahun Perolehan', key: 'tahunPerolehan', width: 15 },
@@ -427,7 +487,6 @@ exports.downloadTemplate = async (req, res) => {
         dataSheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF203764' } };
         
         const lastRow = 1001;
-        // Validasi Kategori pakai dataMasterLengkap
         dataSheet.dataValidations.add(`B2:B${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${Object.keys(dataMasterLengkap).join(',')}"`] });
         dataSheet.dataValidations.add(`D2:D${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.warna.join(',')}"`] });
         dataSheet.dataValidations.add(`E2:E${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.sumberAnggaran.join(',')}"`] });
@@ -436,7 +495,7 @@ exports.downloadTemplate = async (req, res) => {
         dataSheet.dataValidations.add(`M2:M${lastRow}`, { type: 'list', allowBlank: true, formulae: [`"${dropdownOptions.statusPenghapusan.join(',')}"`] });
 
         res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition','attachment; filename=' + 'Template-Inventaris-MIJ-v5.xlsx'); // Nama template baru
+        res.setHeader('Content-Disposition','attachment; filename=' + 'Template-Inventaris-MIJ-v5.xlsx');
         
         await workbook.xlsx.write(res);
         res.end();
@@ -478,9 +537,8 @@ exports.uploadExcel = async (req, res) => {
                     throw new Error(`Data tidak valid di baris ${rowNumber}. Nama Barang, Kategori, Sub Kategori, Sumber Anggaran, dan Tahun Perolehan wajib diisi.`);
                 }
                 
-                // Validasi pakai dataMasterLengkap baru
                 const validSubKategoris = dataMasterLengkap[itemData.kategori];
-                if (!validSubKategoris || !validSubKategoris[itemData.subKategori]) { // Cek keberadaan subkategori di object
+                if (!validSubKategoris || !validSubKategoris[itemData.subKategori]) {
                     throw new Error(`Sub Kategori "${itemData.subKategori}" tidak valid untuk Kategori "${itemData.kategori}" di baris ${rowNumber}.`);
                 }
                 if (itemData.statusPenghapusanExcel && !dropdownOptions.statusPenghapusan.includes(itemData.statusPenghapusanExcel)) {
@@ -509,9 +567,7 @@ exports.uploadExcel = async (req, res) => {
             const kodeAnggaran = kodeSumberAnggaranMap[item.sumberAnggaran] || 'ERR';
             const nomorUrutPadded = String(lastNumber).padStart(4, '0');
             
-            // Ambil kode sub kategori
             const kodeSubKategori = dataMasterLengkap[item.kategori]?.[item.subKategori]?.kode || 'ERR-SUB';
-            // Format nomor inventaris
             const nomorInventaris = `${nomorUrutPadded}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`; 
             
             let tanggalPenghapusanValue = null;
@@ -548,7 +604,7 @@ exports.uploadExcel = async (req, res) => {
                 dasarPenghapusan: item.dasarPenghapusanExcel || null,
                 tanggalPenghapusan: tanggalPenghapusanValue,
 
-                nomorInventaris, // Nomor inventaris baru
+                nomorInventaris,
                 createdAt: now,
                 createdBy: `${req.user.email} (via Upload)`,
                 updatedAt: now,

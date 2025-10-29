@@ -18,21 +18,40 @@
         <h1 class="h2 mb-0">Daftar Barang Inventaris</h1>
         
         <!-- ======================================================= -->
-        <!-- DIUBAH: Tata letak dan link tombol diperbaiki di sini -->
+        <!-- REVISI: Grup Tombol Download Diperbaiki -->
         <!-- ======================================================= -->
-        <div class="d-flex gap-2">
-            <!-- Tombol ini selalu ada, untuk siapa saja -->
-            <a href="/download-template" class="btn btn-success"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download Template</a>
-            
-            <!-- Tombol-tombol ini hanya muncul jika user sudah login -->
+        <div class="d-flex flex-wrap gap-2">
+            <!-- Tombol Admin -->
             <% if (user) { %>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
                     <i class="bi bi-cloud-upload-fill"></i> Upload Data
                 </button>
-                <a href="/tambah" class="btn btn-secondary"><i class="bi bi-plus-circle-fill"></i> Tambah Manual</a>
-                <a href="/download-excel" class="btn btn-info text-white"><i class="bi bi-file-earmark-excel-fill"></i> Download Laporan</a>
+                <a href="/tambah" class="btn btn-success"><i class="bi bi-plus-circle-fill"></i> Tambah Manual</a>
             <% } %>
+            
+            <!-- Grup Tombol Download -->
+            <div class="btn-group">
+                 <a href="/download-template" class="btn btn-secondary"><i class="bi bi-file-earmark-arrow-down-fill"></i> Download Template</a>
+                 
+                 <!-- Tombol dropdown hanya muncul jika login -->
+                 <% if (user) { %>
+                    <button type="button" class="btn btn-info text-white dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/download-excel"><i class="bi bi-file-earmark-text-fill me-2"></i>Download Laporan Lengkap</a></li>
+                        <li><a class="dropdown-item" href="/download-label"><i class="bi bi-qr-code me-2"></i>Download Laporan Label QR</a></li>
+                    </ul>
+                 <% } else { %>
+                    <!-- Jika tidak login, tampilkan tombol Laporan Lengkap biasa -->
+                    <a href="/download-excel" class="btn btn-info text-white"><i class="bi bi-file-earmark-excel-fill"></i> Download Laporan</a>
+                 <% } %>
+            </div>
         </div>
+        <!-- ======================================================= -->
+        <!-- AKHIR REVISI -->
+        <!-- ======================================================= -->
+
     </div>
 
     <form action="/" method="GET" class="mb-4">
@@ -66,15 +85,15 @@
                         <td>
                             <% if(item.statusKondisi === 'Baik') { %>
                                 <span class="badge bg-success"><%= item.statusKondisi %></span>
-                            <% } else if (item.statusKondisi.includes('Perbaikan')) { %>
+                            <% } else if (item.statusKondisi && item.statusKondisi.includes('Perbaikan')) { %>
                                 <span class="badge bg-warning text-dark"><%= item.statusKondisi %></span>
                             <% } else { %>
-                                <span class="badge bg-danger"><%= item.statusKondisi %></span>
+                                <span class="badge bg-danger"><%= item.statusKondisi || 'N/A' %></span>
                             <% } %>
                         </td>
                         <td>
                             <a href="/barang/<%= item.id %>" class="btn btn-info btn-sm text-white" title="Lihat Detail & QR Code"><i class="bi bi-qr-code-scan"></i></a>
-                             <% if (user) { %>
+                               <% if (user) { %>
                                 <a href="/edit/<%= item.id %>" class="btn btn-primary btn-sm" title="Edit"><i class="bi bi-pencil-square"></i></a>
                                 <form action="/hapus/<%= item.id %>" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
                                     <button type="submit" class="btn btn-danger btn-sm" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
@@ -123,4 +142,3 @@
     <% } %>
 
 <%- include('partials/footer') %>
-
