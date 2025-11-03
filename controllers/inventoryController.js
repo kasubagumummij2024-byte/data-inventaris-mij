@@ -12,6 +12,21 @@ function getRomanMonth(monthNumber) {
     return romanMonths[monthNumber - 1];
 }
 
+// --- FUNGSI HELPER BARU UNTUK STANDARISASI ID LOKASI ---
+function standardizeLokasi(lokasiStr) {
+    // Jika lokasi kosong atau tidak valid, gunakan 'NOLOK'
+    if (!lokasiStr || typeof lokasiStr !== 'string' || lokasiStr.trim() === '') {
+        return 'NOLOK'; // 'No Location'
+    }
+    // Mengubah "P.01 / Lemari A" -> "P.01LEMARIA"
+    // Hanya mempertahankan huruf, angka, dan titik.
+    return lokasiStr
+        .toUpperCase()
+        .replace(/[^A-Z0-9\.]/g, '') // Hapus semua karakter kecuali huruf, angka, dan titik
+        .trim();
+}
+// --- AKHIR FUNGSI HELPER BARU ---
+
 // =======================================================
 // DATA MASTER LENGKAP BARU (Berdasarkan CSV Anda - FINAL)
 // =======================================================
@@ -54,7 +69,7 @@ const dataMasterLengkap = {
       'Perlengkapan Pemadam Api': { kode: 'OPS-06', contoh: 'APAR (Tabung Pemadam Api Ringan), Hydrant (jika ada)' },
       'Lainnya (Operasional)': { kode: 'OPS-99', contoh: 'Genset portable, pompa air, troli barang' }
   },
-   'Aset Kendaraan': {
+    'Aset Kendaraan': {
     'Kendaraan Roda Empat': { kode: 'KDN-01', contoh: 'Mobil Operasional, Mobil Kepala Sekolah, Minibus Sekolah' },
     'Kendaraan Roda Dua': { kode: 'KDN-02', contoh: 'Motor Dinas' },
     'Kendaraan Khusus': { kode: 'KDN-03', contoh: 'Forklift, Gerobak Dorong' },
@@ -141,7 +156,11 @@ exports.createItem = async (req, res) => {
         const kodeAnggaran = kodeSumberAnggaranMap[sumberAnggaran] || 'ERR';
         const kodeSubKategori = dataMasterLengkap[kategori]?.[subKategori]?.kode || 'ERR-SUB';
 
-        const nomorInventaris = `${nomorUrutPadded}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
+        // --- REVISI ID BARU ---
+        // Ambil noPintuLokasi dari form, standarisasi, dan masukkan ke ID
+        const kodeNoPintu = standardizeLokasi(req.body.noPintuLokasi);
+        const nomorInventaris = `${nomorUrutPadded}/${kodeNoPintu}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
+        // --- AKHIR REVISI ---
 
         const newItem = {
             namaBarang: req.body.namaBarang,
@@ -159,14 +178,14 @@ exports.createItem = async (req, res) => {
             
             jumlah_awal: parseInt(req.body.jumlah),
             lokasiFisik_awal: req.body.lokasiFisik,
-            noPintuLokasi_awal: req.body.noPintuLokasi || null,
+            noPintuLokasi_awal: req.body.noPintuLokasi || null, // Ini "kunci" ID kita
             statusKondisi_awal: req.body.statusKondisi,
             
             statusPenghapusan: 'Masih Digunakan',
             dasarPenghapusan: null,
             tanggalPenghapusan: null,
             
-            nomorInventaris,
+            nomorInventaris, // Menggunakan ID baru yang sudah direvisi
             createdAt: now,
             createdBy: req.user.email,
             updatedAt: now,
@@ -190,7 +209,7 @@ exports.getEditItemForm = async (req, res) => {
              const dt = itemData.tanggalPenghapusan.toDate();
              itemData.tanggalPenghapusanFormatted = dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
         } else {
-            itemData.tanggalPenghapusanFormatted = '';
+             itemData.tanggalPenghapusanFormatted = '';
         }
 
         res.render('form-edit', {
@@ -211,7 +230,7 @@ exports.updateItem = async (req, res) => {
         if (req.body.tanggalPenghapusan) {
              tanggalPenghapusanValue = new Date(req.body.tanggalPenghapusan);
              if (isNaN(tanggalPenghapusanValue.getTime())) {
-                 tanggalPenghapusanValue = null;
+                  tanggalPenghapusanValue = null;
              }
         }
 
@@ -229,7 +248,7 @@ exports.updateItem = async (req, res) => {
         };
         
         delete updatedItem.tanggalPenghapusanFormatted;
-
+        // Kita tidak mengubah 'nomorInventaris' saat update
         await inventarisCollection.doc(req.params.id).update(updatedItem);
         res.redirect('/');
     } catch (error) {
@@ -568,15 +587,20 @@ exports.uploadExcel = async (req, res) => {
             const nomorUrutPadded = String(lastNumber).padStart(4, '0');
             
             const kodeSubKategori = dataMasterLengkap[item.kategori]?.[item.subKategori]?.kode || 'ERR-SUB';
-            const nomorInventaris = `${nomorUrutPadded}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`; 
+
+            // --- REVISI ID BARU ---
+            // Ambil noPintuLokasi dari item Excel, standarisasi, dan masukkan ke ID
+            const kodeNoPintu = standardizeLokasi(item.noPintuLokasi);
+            const nomorInventaris = `${nomorUrutPadded}/${kodeNoPintu}/${kodeSubKategori}/${kodeAnggaran}/INV-MIJ/${bulanRomawi}/${tahun}`;
+            // --- AKHIR REVISI ---
             
             let tanggalPenghapusanValue = null;
             if (item.tanggalPenghapusanExcel instanceof Date) {
                 tanggalPenghapusanValue = item.tanggalPenghapusanExcel;
             } else if (typeof item.tanggalPenghapusanExcel === 'string' && item.tanggalPenghapusanExcel.trim() !== '') {
                  try {
-                     tanggalPenghapusanValue = new Date(item.tanggalPenghapusanExcel);
-                     if (isNaN(tanggalPenghapusanValue.getTime())) tanggalPenghapusanValue = null;
+                      tanggalPenghapusanValue = new Date(item.tanggalPenghapusanExcel);
+                      if (isNaN(tanggalPenghapusanValue.getTime())) tanggalPenghapusanValue = null;
                  } catch (e) { tanggalPenghapusanValue = null; }
             }
 
@@ -597,14 +621,14 @@ exports.uploadExcel = async (req, res) => {
                 
                 jumlah_awal: item.jumlah,
                 lokasiFisik_awal: item.lokasiFisik,
-                noPintuLokasi_awal: item.noPintuLokasi || null,
+                noPintuLokasi_awal: item.noPintuLokasi || null, // Ini "kunci" ID kita
                 statusKondisi_awal: item.statusKondisi,
 
                 statusPenghapusan: item.statusPenghapusanExcel || 'Masih Digunakan',
                 dasarPenghapusan: item.dasarPenghapusanExcel || null,
                 tanggalPenghapusan: tanggalPenghapusanValue,
 
-                nomorInventaris,
+                nomorInventaris, // Menggunakan ID baru yang sudah direvisi
                 createdAt: now,
                 createdBy: `${req.user.email} (via Upload)`,
                 updatedAt: now,
