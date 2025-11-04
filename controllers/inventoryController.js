@@ -174,11 +174,13 @@ exports.createItem = async (req, res) => {
             nilaiPerolehan: parseFloat(req.body.nilaiPerolehan),
             lokasiFisik: req.body.lokasiFisik,
             noPintuLokasi: req.body.noPintuLokasi || null,
+            penanggungJawab: req.body.penanggungJawab || null, // DITAMBAHKAN
             statusKondisi: req.body.statusKondisi,
             
             jumlah_awal: parseInt(req.body.jumlah),
             lokasiFisik_awal: req.body.lokasiFisik,
             noPintuLokasi_awal: req.body.noPintuLokasi || null, // Ini "kunci" ID kita
+            penanggungJawab_awal: req.body.penanggungJawab || null, // DITAMBAHKAN
             statusKondisi_awal: req.body.statusKondisi,
             
             statusPenghapusan: 'Masih Digunakan',
@@ -239,6 +241,7 @@ exports.updateItem = async (req, res) => {
             tahunPerolehan: parseInt(req.body.tahunPerolehan),
             jumlah: parseInt(req.body.jumlah),
             nilaiPerolehan: parseFloat(req.body.nilaiPerolehan),
+            penanggungJawab: req.body.penanggungJawab || null, // DITAMBAHKAN
             noPintuLokasi: req.body.noPintuLokasi || null,
             statusPenghapusan: req.body.statusPenghapusan,
             dasarPenghapusan: req.body.dasarPenghapusan || null,
@@ -360,7 +363,9 @@ exports.downloadExcel = async (req, res) => {
             { header: 'Lokasi Awal', key: 'lokasiFisik_awal', width: 30 },
             { header: 'Lokasi Terkini', key: 'lokasiFisik', width: 30 },
             { header: 'No. Pintu Awal', key: 'noPintuLokasi_awal', width: 15 },
+            { header: 'Penanggung Jawab Awal', key: 'penanggungJawab_awal', width: 25 }, // DITAMBAHKAN
             { header: 'No. Pintu Terkini', key: 'noPintuLokasi', width: 15 },
+            { header: 'Penanggung Jawab Terkini', key: 'penanggungJawab', width: 25 }, // DITAMBAHKAN
             { header: 'Jumlah Awal', key: 'jumlah_awal', width: 15 },
             { header: 'Jumlah Terkini', key: 'jumlah', width: 15 },
             { header: 'Satuan', key: 'satuan', width: 10 },
@@ -390,7 +395,9 @@ exports.downloadExcel = async (req, res) => {
                 updatedBy: item.updatedBy || '',
                 tanggalPenghapusan: tanggalPenghapusanFormatted,
                 noPintuLokasi_awal: item.noPintuLokasi_awal || '',
+                penanggungJawab_awal: item.penanggungJawab_awal || '', // DITAMBAHKAN
                 noPintuLokasi: item.noPintuLokasi || '',
+                penanggungJawab: item.penanggungJawab || '', // DITAMBAHKAN
             });
 
             row.height = 80;
@@ -439,6 +446,7 @@ exports.downloadLabelSheet = async (req, res) => {
             { header: 'QR Code', key: 'qr', width: 15 },
             { header: 'Nomor Inventaris', key: 'nomorInventaris', width: 35 },
             { header: 'Nama Barang', key: 'namaBarang', width: 30 },
+            { header: 'Penanggung Jawab', key: 'penanggungJawab', width: 30 }, // DITAMBAHKAN
         ];
         
         worksheet.getRow(1).font = { bold: true };
@@ -448,11 +456,13 @@ exports.downloadLabelSheet = async (req, res) => {
             const row = worksheet.addRow({
                 nomorInventaris: item.nomorInventaris,
                 namaBarang: item.namaBarang,
+                penanggungJawab: item.penanggungJawab || '', // DITAMBAHKAN
             });
 
             row.height = 80;
             row.getCell('B').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
             row.getCell('C').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; 
+            row.getCell('D').alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }; // DITAMBAHKAN
 
             const url = `${req.protocol}://${req.get('host')}/barang/${item.id}`;
             const qrBuffer = await QRCode.toBuffer(url, { type: 'png', width: 100, margin: 1 });
@@ -487,6 +497,7 @@ exports.downloadTemplate = async (req, res) => {
         
         dataSheet.columns = [
             { header: 'Nama Barang', key: 'namaBarang', width: 40 },
+            { header: 'Penanggung Jawab', key: 'penanggungJawab', width: 30 }, // DITAMBAHKAN
             { header: 'Kategori', key: 'kategori', width: 30 },
             { header: 'Sub Kategori', key: 'subKategori', width: 25 },
             { header: 'Warna', key: 'warna', width: 20 },
@@ -506,12 +517,13 @@ exports.downloadTemplate = async (req, res) => {
         dataSheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF203764' } };
         
         const lastRow = 1001;
-        dataSheet.dataValidations.add(`B2:B${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${Object.keys(dataMasterLengkap).join(',')}"`] });
-        dataSheet.dataValidations.add(`D2:D${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.warna.join(',')}"`] });
-        dataSheet.dataValidations.add(`E2:E${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.sumberAnggaran.join(',')}"`] });
-        dataSheet.dataValidations.add(`H2:H${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.satuan.join(',')}"`] });
-        dataSheet.dataValidations.add(`L2:L${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.statusKondisi.join(',')}"`] });
-        dataSheet.dataValidations.add(`M2:M${lastRow}`, { type: 'list', allowBlank: true, formulae: [`"${dropdownOptions.statusPenghapusan.join(',')}"`] });
+        // Validasi digeser 1 kolom
+        dataSheet.dataValidations.add(`C2:C${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${Object.keys(dataMasterLengkap).join(',')}"`] });
+        dataSheet.dataValidations.add(`E2:E${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.warna.join(',')}"`] });
+        dataSheet.dataValidations.add(`F2:F${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.sumberAnggaran.join(',')}"`] });
+        dataSheet.dataValidations.add(`I2:I${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.satuan.join(',')}"`] });
+        dataSheet.dataValidations.add(`M2:M${lastRow}`, { type: 'list', allowBlank: false, formulae: [`"${dropdownOptions.statusKondisi.join(',')}"`] });
+        dataSheet.dataValidations.add(`N2:N${lastRow}`, { type: 'list', allowBlank: true, formulae: [`"${dropdownOptions.statusPenghapusan.join(',')}"`] });
 
         res.setHeader('Content-Type','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition','attachment; filename=' + 'Template-Inventaris-MIJ-v5.xlsx');
@@ -536,20 +548,21 @@ exports.uploadExcel = async (req, res) => {
             if (rowNumber > 1) {
                 const itemData = {
                     namaBarang: row.getCell(1).value,
-                    kategori: row.getCell(2).value,
-                    subKategori: row.getCell(3).value,
-                    warna: row.getCell(4).value,
-                    sumberAnggaran: row.getCell(5).value,
-                    tahunPerolehan: parseInt(row.getCell(6).value),
-                    jumlah: parseInt(row.getCell(7).value),
-                    satuan: row.getCell(8).value,
-                    nilaiPerolehan: parseFloat(row.getCell(9).value),
-                    lokasiFisik: row.getCell(10).value,
-                    noPintuLokasi: row.getCell(11).value || null,
-                    statusKondisi: row.getCell(12).value,
-                    statusPenghapusanExcel: row.getCell(13).value,
-                    dasarPenghapusanExcel: row.getCell(14).value,
-                    tanggalPenghapusanExcel: row.getCell(15).value,
+                    penanggungJawab: row.getCell(2).value || null, // DITAMBAHKAN
+                    kategori: row.getCell(3).value,
+                    subKategori: row.getCell(4).value,
+                    warna: row.getCell(5).value,
+                    sumberAnggaran: row.getCell(6).value,
+                    tahunPerolehan: parseInt(row.getCell(7).value),
+                    jumlah: parseInt(row.getCell(8).value),
+                    satuan: row.getCell(9).value,
+                    nilaiPerolehan: parseFloat(row.getCell(10).value),
+                    lokasiFisik: row.getCell(11).value,
+                    noPintuLokasi: row.getCell(12).value || null,
+                    statusKondisi: row.getCell(13).value,
+                    statusPenghapusanExcel: row.getCell(14).value,
+                    dasarPenghapusanExcel: row.getCell(15).value,
+                    tanggalPenghapusanExcel: row.getCell(16).value,
                 };
                 
                 if (!itemData.namaBarang || !itemData.kategori || !itemData.subKategori || !itemData.sumberAnggaran || !itemData.tahunPerolehan) {
@@ -607,6 +620,7 @@ exports.uploadExcel = async (req, res) => {
             const docRef = inventarisCollection.doc();
             batch.set(docRef, {
                 namaBarang: item.namaBarang,
+                penanggungJawab: item.penanggungJawab, // DITAMBAHKAN
                 kategori: item.kategori,
                 subKategori: item.subKategori,
                 warna: item.warna,
@@ -622,6 +636,7 @@ exports.uploadExcel = async (req, res) => {
                 jumlah_awal: item.jumlah,
                 lokasiFisik_awal: item.lokasiFisik,
                 noPintuLokasi_awal: item.noPintuLokasi || null, // Ini "kunci" ID kita
+                penanggungJawab_awal: item.penanggungJawab, // DITAMBAHKAN
                 statusKondisi_awal: item.statusKondisi,
 
                 statusPenghapusan: item.statusPenghapusanExcel || 'Masih Digunakan',
@@ -645,3 +660,4 @@ exports.uploadExcel = async (req, res) => {
         res.redirect(`/?uploadStatus=error&message=${encodeURIComponent(error.message)}`);
     }
 };
+
