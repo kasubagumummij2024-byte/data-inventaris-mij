@@ -541,45 +541,154 @@ exports.uploadExcel = async (req, res) => {
         if (!req.file) { return res.status(400).send('Tidak ada file yang diunggah.'); }
         const workbook = new exceljs.Workbook();
         await workbook.xlsx.load(req.file.buffer);
-        const worksheet = workbook.getWorksheet(1);
-        const newItems = [];
+        const worksheet = workbook.getWorksheet('Data Inventaris'); // <-- REVISI DI SINI
+
+        // Tambahkan pengecekan jika sheet tidak ditemukan
+        if (!worksheet) {
+            throw new Error('Sheet "Data Inventaris" tidak ditemukan di file Excel.');
+        }
+
+        const newItems = [];
         
         worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-            if (rowNumber > 1) {
-                const itemData = {
-                    namaBarang: row.getCell(1).value,
-                    penanggungJawab: row.getCell(2).value || null, // DITAMBAHKAN
-                    kategori: row.getCell(3).value,
-                    subKategori: row.getCell(4).value,
-                    warna: row.getCell(5).value,
-                    sumberAnggaran: row.getCell(6).value,
-                    tahunPerolehan: parseInt(row.getCell(7).value),
-                    jumlah: parseInt(row.getCell(8).value),
-                    satuan: row.getCell(9).value,
-                    nilaiPerolehan: parseFloat(row.getCell(10).value),
-                    lokasiFisik: row.getCell(11).value,
-                    noPintuLokasi: row.getCell(12).value || null,
-                    statusKondisi: row.getCell(13).value,
-                    statusPenghapusanExcel: row.getCell(14).value,
-                    dasarPenghapusanExcel: row.getCell(15).value,
-                    tanggalPenghapusanExcel: row.getCell(16).value,
-                };
-                
-                if (!itemData.namaBarang || !itemData.kategori || !itemData.subKategori || !itemData.sumberAnggaran || !itemData.tahunPerolehan) {
-                    throw new Error(`Data tidak valid di baris ${rowNumber}. Nama Barang, Kategori, Sub Kategori, Sumber Anggaran, dan Tahun Perolehan wajib diisi.`);
-                }
-                
-                const validSubKategoris = dataMasterLengkap[itemData.kategori];
-                if (!validSubKategoris || !validSubKategoris[itemData.subKategori]) {
-                    throw new Error(`Sub Kategori "${itemData.subKategori}" tidak valid untuk Kategori "${itemData.kategori}" di baris ${rowNumber}.`);
-                }
-                if (itemData.statusPenghapusanExcel && !dropdownOptions.statusPenghapusan.includes(itemData.statusPenghapusanExcel)) {
-                     throw new Error(`Status Penghapusan "${itemData.statusPenghapusanExcel}" tidak valid di baris ${rowNumber}.`);
-                }
+            if (rowNumber > 1) {
+                
+                // --- 1. Ambil Semua Data Mentah dari Sel ---
+                const namaBarang = row.getCell(1).value;
+                const penanggungJawab = row.getCell(2).value || null;
+                const kategori = row.getCell(3).value;
+                const subKategori = row.getCell(4).value;
+                const warna = row.getCell(5).value;
+                const sumberAnggaran = row.getCell(6).value;
+                const tahunPerolehanRaw = row.getCell(7).value;
+                const jumlahRaw = row.getCell(8).value;
+                const satuan = row.getCell(9).value;
+                const nilaiPerolehanRaw = row.getCell(10).value;
+                const lokasiFisik = row.getCell(11).value;
+                const noPintuLokasi = row.getCell(12).value || null;
+                const statusKondisi = row.getCell(13).value;
+                const statusPenghapusanExcel = row.getCell(14).value;
+                const dasarPenghapusanExcel = row.getCell(15).value;
+                const tanggalPenghapusanExcel = row.getCell(16).value;
 
-                newItems.push(itemData);
-            }
-        });
+                // --- 2. BLOK VALIDASI SPESIFIK ---
+                // Dapatkan konteks nama barang (jika ada) untuk pesan error
+                const errorContext = namaBarang ? `(Barang: ${namaBarang})` : '';
+
+                // Cek Wajib Isi (Nama Barang)
+                if (!namaBarang) {
+                    throw new Error(`Baris ${rowNumber}: Nama Barang wajib diisi (Kolom A).`);
+                }
+                
+                // Cek Kategori (Wajib + Valid)
+                if (!kategori) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Kategori wajib diisi (Kolom C).`);
+                }
+                if (!dataMasterLengkap[kategori]) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Kategori "${kategori}" tidak valid. Pilih dari daftar.`);
+                }
+
+                // Cek Sub Kategori (Wajib + Valid)
+                if (!subKategori) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Sub Kategori wajib diisi (Kolom D).`);
+              _ }
+                const validSubKategoris = dataMasterLengkap[kategori];
+                if (!validSubKategoris || !validSubKategoris[subKategori]) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Sub Kategori "${subKategori}" tidak valid untuk Kategori "${kategori}".`);
+                }
+
+                // Cek Warna (Wajib + Valid)
+                if (!warna) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Warna wajib diisi (Kolom E).`);
+                }
+                if (!dropdownOptions.warna.includes(warna)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Warna "${warna}" tidak valid. Pilih dari daftar.`);
+                }
+
+                // Cek Sumber Anggaran (Wajib + Valid)
+                if (!sumberAnggaran) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Sumber Anggaran wajib diisi (Kolom F).`);
+                }
+                if (!kodeSumberAnggaranMap[sumberAnggaran]) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Sumber Anggaran "${sumberAnggaran}" tidak valid. Pilih dari daftar.`);
+                }
+
+                // Cek Tahun Perolehan (Wajib + Angka 4 Digit)
+                if (!tahunPerolehanRaw) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Tahun Perolehan wajib diisi (Kolom G).`);
+                }
+                const tahunPerolehan = parseInt(tahunPerolehanRaw);
+                if (isNaN(tahunPerolehan) || String(tahunPerolehan).length !== 4) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Tahun Perolehan "${tahunPerolehanRaw}" tidak valid. Masukkan angka 4 digit (contoh: 2024).`);
+                }
+
+                // Cek Jumlah (Wajib + Angka)
+                if (jumlahRaw === null || jumlahRaw === undefined) { // Cek null/undefined, karena 0 bisa jadi valid
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Jumlah wajib diisi (Kolom H).`);
+                }
+                const jumlah = parseInt(jumlahRaw);
+                if (isNaN(jumlah)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Jumlah "${jumlahRaw}" tidak valid. Masukkan angka saja.`);
+                }
+                
+                // Cek Satuan (Wajib + Valid)
+                if (!satuan) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Satuan wajib diisi (Kolom I).`);
+E               }
+                if (!dropdownOptions.satuan.includes(satuan)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Satuan "${satuan}" tidak valid. Pilih dari daftar.`);
+                }
+
+                // Cek Nilai Perolehan (Wajib + Angka)
+                if (nilaiPerolehanRaw === null || nilaiPerolehanRaw === undefined) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Nilai Perolehan (Rp) wajib diisi (Kolom J). Masukkan 0 jika gratis.`);
+                }
+                const nilaiPerolehan = parseFloat(nilaiPerolehanRaw);
+                if (isNaN(nilaiPerolehan)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Nilai Perolehan "${nilaiPerolehanRaw}" tidak valid. Masukkan angka saja.`);
+                }
+
+                // Cek Lokasi Fisik (Wajib)
+                if (!lokasiFisik) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Lokasi Fisik wajib diisi (Kolom K).`);
+                }
+
+                // Cek Status Kondisi (Wajib + Valid)
+                if (!statusKondisi) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Status Kondisi wajib diisi (Kolom M).`);
+                }
+                if (!dropdownOptions.statusKondisi.includes(statusKondisi)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Status Kondisi "${statusKondisi}" tidak valid. Pilih dari daftar.`);
+      S         }
+                
+                // --- 3. Jika Lolos, Buat Objek itemData ---
+                const itemData = {
+                    namaBarang: namaBarang,
+                    penanggungJawab: penanggungJawab,
+                    kategori: kategori,
+                    subKategori: subKategori,
+                    warna: warna,
+                    sumberAnggaran: sumberAnggaran,
+                    tahunPerolehan: tahunPerolehan,
+                    jumlah: jumlah,
+                    satuan: satuan,
+                    nilaiPerolehan: nilaiPerolehan,
+                    lokasiFisik: lokasiFisik,
+                    noPintuLokasi: noPintuLokasi,
+                    statusKondisi: statusKondisi,
+                    statusPenghapusanExcel: statusPenghapusanExcel,
+                    dasarPenghapusanExcel: dasarPenghapusanExcel,
+                    tanggalPenghapusanExcel: tanggalPenghapusanExcel,
+          S       };
+
+                // Validasi opsional (Status Penghapusan)
+                if (itemData.statusPenghapusanExcel && !dropdownOptions.statusPenghapusan.includes(itemData.statusPenghapusanExcel)) {
+                    throw new Error(`Baris ${rowNumber} ${errorContext}: Status Penghapusan "${itemData.statusPenghapusanExcel}" tidak valid (Kolom N).`);
+                }
+
+                newItems.push(itemData);
+            }
+        });
 
         if (newItems.length === 0) {
             return res.redirect(`/?uploadStatus=error&message=${encodeURIComponent('File Excel kosong atau format tidak sesuai.')}`);
