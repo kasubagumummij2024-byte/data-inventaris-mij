@@ -591,7 +591,7 @@ exports.uploadExcel = async (req, res) => {
                 // Cek Sub Kategori (Wajib + Valid)
                 if (!subKategori) {
                     throw new Error(`Baris ${rowNumber} ${errorContext}: Sub Kategori wajib diisi (Kolom D).`);
-              _ }
+                }
                 const validSubKategoris = dataMasterLengkap[kategori];
                 if (!validSubKategoris || !validSubKategoris[subKategori]) {
                     throw new Error(`Baris ${rowNumber} ${errorContext}: Sub Kategori "${subKategori}" tidak valid untuk Kategori "${kategori}".`);
@@ -634,7 +634,7 @@ exports.uploadExcel = async (req, res) => {
                 // Cek Satuan (Wajib + Valid)
                 if (!satuan) {
                     throw new Error(`Baris ${rowNumber} ${errorContext}: Satuan wajib diisi (Kolom I).`);
-E               }
+                }
                 if (!dropdownOptions.satuan.includes(satuan)) {
                     throw new Error(`Baris ${rowNumber} ${errorContext}: Satuan "${satuan}" tidak valid. Pilih dari daftar.`);
                 }
@@ -659,7 +659,7 @@ E               }
                 }
                 if (!dropdownOptions.statusKondisi.includes(statusKondisi)) {
                     throw new Error(`Baris ${rowNumber} ${errorContext}: Status Kondisi "${statusKondisi}" tidak valid. Pilih dari daftar.`);
-      S         }
+                }
                 
                 // --- 3. Jika Lolos, Buat Objek itemData ---
                 const itemData = {
@@ -679,7 +679,7 @@ E               }
                     statusPenghapusanExcel: statusPenghapusanExcel,
                     dasarPenghapusanExcel: dasarPenghapusanExcel,
                     tanggalPenghapusanExcel: tanggalPenghapusanExcel,
-          S       };
+                  };
 
                 // Validasi opsional (Status Penghapusan)
                 if (itemData.statusPenghapusanExcel && !dropdownOptions.statusPenghapusan.includes(itemData.statusPenghapusanExcel)) {
